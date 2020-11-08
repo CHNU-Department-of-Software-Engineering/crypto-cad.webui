@@ -23,7 +23,7 @@ export default Vue.extend({
 </script>
 
 <style>
-  body {
+  #app {
     font-family: 'Montserrat', sans-serif;
   }
 </style>

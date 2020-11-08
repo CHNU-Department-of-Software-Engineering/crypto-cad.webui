@@ -1,16 +1,16 @@
 <template>
   <div class="home-page-wrapper">
-    <CiphersTabs></CiphersTabs>
+    <CipherForm></CipherForm>
   </div>
 </template>
 
 <script lang="ts">
-import CiphersTabs from '@/components/CiphersTabs/CiphersTabs.vue'
+import CipherForm from '../components/CipherForm/CipherForm.vue'
 
 export default {
   name: 'Home',
   components: {
-    CiphersTabs
+    CipherForm
   }
 }
 </script>
@@ -19,6 +19,7 @@ export default {
   .home-page-wrapper {
     background-color: #f5f5f5;
     height: calc(100vh - 60px);
-    padding: 0 30px;
+    padding: 20px 50px;
+    font-family: 'Montserrat', sans-serif;
   }
 </style>

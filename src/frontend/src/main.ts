@@ -5,6 +5,8 @@ import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
 
+import 'vue2-dropzone/dist/vue2Dropzone.min.css'
+
 Vue.config.productionTip = false
 
 new Vue({

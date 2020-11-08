@@ -1,6 +1,6 @@
 <template>
   <div class="header-wrapper">
-    <span><b>Crypton</b></span>
+    <h3>CryptoCAD</h3>
     <div>
       <LoginDialog/>
     </div>
