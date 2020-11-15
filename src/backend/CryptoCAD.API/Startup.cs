@@ -107,9 +107,17 @@ namespace CryptoCAD.API
                 endpoints.MapControllers();
             });
             app.UseStaticFiles();
+
+            var directory = Path.Combine(Directory.GetCurrentDirectory(), @"Resources");
+
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+                FileProvider = new PhysicalFileProvider(directory),
                 RequestPath = new PathString("/Resources")
             });
             app.UseSpaStaticFiles();
