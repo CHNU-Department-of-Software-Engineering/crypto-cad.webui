@@ -1,4 +1,5 @@
 ﻿using CryptoCAD.API.Models;
+using CryptoCAD.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,7 @@ namespace CryptoCAD.Console
             var response = DESEncode(key, text);
             System.Console.WriteLine($"Encrypted text: {response.Data}\n");
 
-            var responseD = DESDecode(key, text, response.IV, response.DataB);
+            var responseD = DESDecode(key, response.Data, response.IV);
             System.Console.WriteLine($"Decrypted text: {responseD.Data}\n");
 
             System.Console.ReadKey();
@@ -32,7 +33,7 @@ namespace CryptoCAD.Console
 
         private CipherResponse DESEncode(string key, string data)
         {
-            var key_b = Encoding.UTF8.GetBytes(key);
+            var key_b = ConvertUtill.FromString(key, ConvertMode.UTF8);
 
             if (key_b.Length != 8)
             {
@@ -48,7 +49,7 @@ namespace CryptoCAD.Console
 
             var cryptoStream = new CryptoStream(memoryStream, DESalg.CreateEncryptor(key_b, IV), CryptoStreamMode.Write);
 
-            byte[] toEncrypt = Encoding.UTF8.GetBytes(data);
+            byte[] toEncrypt = ConvertUtill.FromString(data, ConvertMode.UTF8);
 
             cryptoStream.Write(toEncrypt, 0, toEncrypt.Length);
             cryptoStream.FlushFinalBlock();
@@ -61,26 +62,25 @@ namespace CryptoCAD.Console
             return new CipherResponse
             {
                 Key = key,
-                Data = Encoding.UTF8.GetString(ret),
-                IV = BitConverter.ToUInt64(IV, 0),
-                DataB = ret
+                Data = ConvertUtill.ToString(ret, ConvertMode.BASE64),
+                IV = BitConverter.ToUInt64(IV, 0)
             };
         }
 
-        private CipherResponse DESDecode(string key, string data, ulong IV, byte[] dataB)
+        private CipherResponse DESDecode(string key, string data, ulong IV)
         {
-            var key_b = Encoding.UTF8.GetBytes(key);
+            var key_b = ConvertUtill.FromString(key, ConvertMode.UTF8);
 
             if (key_b.Length != 8)
             {
                 throw new ArgumentException($"Key lenght should be 64-bit. Received key lenght: {key_b.Length}");
             }
 
-            byte[] toDecrypt = Encoding.UTF8.GetBytes(data);
+            byte[] toDecrypt = ConvertUtill.FromString(data, ConvertMode.BASE64);
 
             var iv = BitConverter.GetBytes(IV);
 
-            var memoryStream = new MemoryStream(dataB);
+            var memoryStream = new MemoryStream(toDecrypt);
 
             var DESalg = DES.Create();
             DESalg.Padding = PaddingMode.Zeros;
@@ -89,11 +89,11 @@ namespace CryptoCAD.Console
                 DESalg.CreateDecryptor(key_b, iv),
                 CryptoStreamMode.Read);
 
-            byte[] fromEncrypt = new byte[dataB.Length];
+            byte[] fromEncrypt = new byte[toDecrypt.Length];
 
             cryptoStream.Read(fromEncrypt, 0, fromEncrypt.Length);
 
-            var result = Encoding.UTF8.GetString(fromEncrypt);
+            var result = ConvertUtill.ToString(fromEncrypt, ConvertMode.UTF8);
 
             return new CipherResponse
             {

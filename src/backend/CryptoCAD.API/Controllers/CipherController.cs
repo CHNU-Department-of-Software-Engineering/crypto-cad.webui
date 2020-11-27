@@ -102,7 +102,8 @@ namespace CryptoCAD.API.Controllers
             {
                 Key = key,
                 Data = ConvertUtill.ToString(ret, ConvertMode.BASE64),
-                IV = BitConverter.ToUInt64(IV, 0)
+                IV = BitConverter.ToUInt64(IV, 0),
+                DataB = ret
             };
         }
 

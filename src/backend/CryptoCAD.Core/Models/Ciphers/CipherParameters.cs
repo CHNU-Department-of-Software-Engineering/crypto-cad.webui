@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CryptoCAD.Core.Abstractions
+namespace CryptoCAD.Core.Models.Ciphers
 {
-    public interface ICipherFactory
+    internal class CipherParameters
     {
     }
 }
