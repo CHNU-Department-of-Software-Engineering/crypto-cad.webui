@@ -1,4 +1,4 @@
-# crypton
+# CryptoCAD
 
 ## Project setup
 ```

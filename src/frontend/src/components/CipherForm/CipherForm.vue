@@ -37,9 +37,11 @@
     </v-row>
    <div class="cipher-form__inputs">
      <v-row>
-       <v-col cols="4" v-for="input in selectedCipher.inputs" :key="input.name">
+       <v-col cols="12">
          <v-text-field
-           :label="input.name"
+           v-model="publicKeyInput"
+           :label="'Public Key'"
+           :rules="[publicKeyRules.required]"
            outlined
          ></v-text-field>
        </v-col>
@@ -48,7 +50,13 @@
     <div class="cipher-form__file-dropzone">
       <v-row>
         <v-col align-self="center">
-          <vue-dropzone id="dropzone" :options="dropzoneOptions" :useCustomSlot=true>
+          <vue-dropzone
+            id="file-dropzone"
+            ref="fileDropzone"
+            :options="dropzoneOptions"
+            :useCustomSlot=true
+            @vdropzone-file-added="onFileAdded"
+          >
             <div class="dropzone-custom-content">
               <h3 class="dropzone-custom-title">Drag and drop to upload content</h3>
               <div class="subtitle">...or click to select a file from your computer</div>
@@ -58,7 +66,7 @@
       </v-row>
     </div>
     <div class="cipher-form__submit-button">
-      <v-btn outlined width="400px" color="success">
+      <v-btn outlined width="400px" color="success" @click="onSubmitForm">
         Submit
       </v-btn>
     </div>
@@ -67,6 +75,7 @@
 
 <script>
 import ciphers from '../../assets/mocks/ciphers'
+import axios from 'axios'
 import vueDropzone from 'vue2-dropzone'
 
 export default {
@@ -80,6 +89,7 @@ export default {
       selectedCipherId: 1,
       isEncrypt: true,
       isSignedIn: localStorage.getItem('isSignedIn'),
+      fileText: '',
       cipherOperations: [
         {
           value: 'encrypt',
@@ -91,11 +101,55 @@ export default {
         }
       ],
       selectedOperation: 'encrypt',
+      publicKeyInput: '',
+      publicKeyRules: {
+        required: value => !!value || 'Required'
+      },
       dropzoneOptions: {
-        url: 'https://httpbin.org/post',
+        url: 'fake_url',
+        acceptedFiles: 'text/plain, application/rtf',
         maxFilesize: 12.5, // MB
-        maxFiles: 1
+        maxFiles: 1,
+        manuallyAddFile: true,
+        autoProcessQueue: false
       }
+    }
+  },
+  methods: {
+    onFileAdded (file) {
+      const fileReader = new FileReader()
+
+      fileReader.readAsText(file)
+      fileReader.onload = (event) => {
+        this.fileText = event.target.result
+      }
+    },
+    download (filename, text) {
+      const element = document.createElement('a')
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
+      element.setAttribute('download', filename)
+
+      element.style.display = 'none'
+      document.body.appendChild(element)
+
+      element.click()
+
+      document.body.removeChild(element)
+    },
+    onSubmitForm () {
+      axios({
+        url: 'myuploadurl',
+        method: 'POTS',
+        data: {
+          text: this.fileText.trim(),
+          cipher: this.ciphers.find(cipher => cipher.id === this.selectedCipherId),
+          encrypt: this.selectedOperation === 'encrypt',
+          publicKey: this.publicKeyInput.trim()
+        }
+      }).then().catch(() => {
+        const currentDate = new Date()
+        this.download(`encrypted_${currentDate.getUTCMilliseconds()}`, this.fileText.trim())
+      })
     }
   },
   computed: {
@@ -104,9 +158,6 @@ export default {
         text: cipher.name,
         value: cipher.id
       }))
-    },
-    selectedCipher () {
-      return this.ciphers.find(cipher => cipher.id === this.selectedCipherId)
     }
   }
 }
@@ -121,6 +172,7 @@ export default {
     box-shadow: 0 4px 25px 0 rgba(0,0,0,.1);
 
     .dropzone-custom-content {
+      height: 170px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -147,7 +199,7 @@ export default {
     }
 
     .cipher-form__inputs {
-      height: calc(100% - 491px);
+      height: calc(100% - 610px);
       margin-bottom: 15px;
       overflow-y: auto;
       overflow-x: hidden;

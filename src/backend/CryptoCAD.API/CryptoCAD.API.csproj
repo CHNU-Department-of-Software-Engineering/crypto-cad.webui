@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CryptoCAD.Core\CryptoCAD.Core.csproj" />
     <ProjectReference Include="..\CryptoCAD.Data\CryptoCAD.Data.csproj" />
+    <ProjectReference Include="..\CryptoCAD.Core\CryptoCAD.Core.csproj" />
   </ItemGroup>
 
 
