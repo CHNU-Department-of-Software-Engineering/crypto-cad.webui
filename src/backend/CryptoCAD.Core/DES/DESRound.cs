@@ -6,6 +6,9 @@ namespace CryptoCAD.Core.DES
 {
     internal class DESRound
     {
+
+
+
         private DESFunction DESFunction;
     }
 }

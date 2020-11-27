@@ -7,24 +7,26 @@ namespace CryptoCAD.Console
     {
         static void Main(string[] args)
         {
-            byte[] text = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xE7 };
-            byte[] key = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
-            byte[] output = new byte[8];
-            byte[,] schedule = new byte[16, 6];
+			//byte[] text = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xE7 };
+			//byte[] key = { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF };
+			//byte[] output = new byte[8];
+			//byte[,] schedule = new byte[16, 6];
 
-            DESService.KeySchedule(key, schedule, DESService.ENCRYPT);
-            DESService.Crypt(text, output, ToJaggedArray(schedule));
-            System.Console.Write("Encrypt Output: ");
-            PrintText(output);
+			//DESService.KeySchedule(key, schedule, DESService.ENCRYPT);
+			//DESService.Crypt(text, output, ToJaggedArray(schedule));
+			//System.Console.Write("Encrypt Output: ");
+			//PrintText(output);
 
-            DESService.KeySchedule(key, schedule, DESService.DECRYPT);
-            DESService.Crypt(output, text, ToJaggedArray(schedule));
-            System.Console.Write("Decrypt Output: ");
-            PrintText(text);
+			//DESService.KeySchedule(key, schedule, DESService.DECRYPT);
+			//DESService.Crypt(output, text, ToJaggedArray(schedule));
+			//System.Console.Write("Decrypt Output: ");
+			//PrintText(text);
 
-            //var p = G(0b_1111, 62, 45);
+			////var p = G(0b_1111, 62, 45);
 
-            System.Console.WriteLine("Hello World!");
+			//System.Console.WriteLine("Hello World!");
+
+			new Cipher().Main();
         }
 
 		private static void PrintText(byte[] hash)

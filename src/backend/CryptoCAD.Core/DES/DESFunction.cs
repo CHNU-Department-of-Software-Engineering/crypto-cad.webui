@@ -5,7 +5,7 @@ namespace CryptoCAD.Core.DES
 {
     internal class DESFunction : IFunction
     {
-        public static readonly int[] EP_DEFAULT = new int[48]
+        public static readonly byte[] EP_DEFAULT = new byte[48]
         {
             32, 1, 2, 3, 4, 5,
             4, 5, 6, 7, 8, 9,
@@ -77,7 +77,7 @@ namespace CryptoCAD.Core.DES
             },
         };
 
-        public static readonly int[] P_DEFAULT = new int[32]
+        public static readonly byte[] P_DEFAULT = new byte[32]
         {
             16, 7, 20, 21, 29, 12, 28, 17,
             1, 15, 23, 26, 5, 18, 31, 10,
@@ -86,11 +86,11 @@ namespace CryptoCAD.Core.DES
         };
 
 
-        private const int KEY_LENGHT = 48;
-        private const int DATA_LENGHT = 32;
+        private const byte KEY_LENGHT = 48;
+        private const byte DATA_LENGHT = 32;
 
 
-        private readonly int[] _EP;
+        private readonly byte[] _EP;
 
         private readonly byte[] Key;
         private readonly byte[] Data;
@@ -144,7 +144,7 @@ namespace CryptoCAD.Core.DES
             byte block2b, block4b;
             byte[] blocks4b = new byte[8];
 
-            for (int i = 0, j = 0; i < 8; i += 2, ++j)
+            for (byte i = 0, j = 0; i < 8; i += 2, ++j)
             {
                 block2b = ExtremeBits(blocks6b[i]);
                 block4b = MiddleBits(blocks6b[i]);

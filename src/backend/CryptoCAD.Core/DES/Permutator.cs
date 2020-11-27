@@ -5,7 +5,7 @@ namespace CryptoCAD.Core.DES
 {
     internal class Permutator : IPermutator
     {
-        public static readonly int[] IP_DEFAULT = new int[64]
+        public static readonly byte[] IP_DEFAULT = new byte[64]
         {
             58, 50, 42, 34, 26, 18, 10, 2,
             60, 52, 44, 36, 28, 20, 12, 4,
@@ -17,10 +17,10 @@ namespace CryptoCAD.Core.DES
             63, 55, 47, 39, 31, 23, 15, 7
         };
 
-        public static readonly int[] FP_DEFAULT = new int[64]
+        public static readonly byte[] FP_DEFAULT = new byte[64]
         {
             40, 8, 48, 16, 56, 24, 64, 32,
-            39, 7, 47, 15, 55, 23, 63,  31,
+            39, 7, 47, 15, 55, 23, 63, 31,
             38, 6, 46, 14, 54, 22, 62, 30,
             37, 5, 45, 13, 53, 21, 61, 29,
             36, 4, 44, 12, 52, 20, 60, 28,
@@ -29,15 +29,15 @@ namespace CryptoCAD.Core.DES
             33, 1, 41, 9, 49, 17, 57, 25
         };
 
-        private readonly int[] _IP;
-        private readonly int[] _FP;
+        private readonly byte[] _IP;
+        private readonly byte[] _FP;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="ip"></param>
         /// <param name="fp"></param>
-        public Permutator(int[] ip = null, int[] fp = null)
+        public Permutator(byte[] ip = null, byte[] fp = null)
         {
             _IP = ip is null ? IP_DEFAULT : ip;
             _FP = fp is null ? FP_DEFAULT : fp;

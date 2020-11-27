@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CryptoCAD.API\CryptoCAD.API.csproj" />
     <ProjectReference Include="..\CryptoCAD.Core\CryptoCAD.Core.csproj" />
   </ItemGroup>
 
