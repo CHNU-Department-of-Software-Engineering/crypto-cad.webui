@@ -22,6 +22,7 @@
         <v-select
           v-model="selectedCipherId"
           :items="formattedCiphers"
+          :rules="[inputRules.required]"
           label="Select Cipher"
           outlined
         ></v-select>
@@ -30,7 +31,7 @@
         <v-select
           v-model="selectedOperation"
           :items="cipherOperations"
-          label="Select Cipher Operation"
+          label="Select Operation"
           outlined
         ></v-select>
       </v-col>
@@ -41,41 +42,44 @@
          <v-text-field
            v-model="publicKeyInput"
            :label="'Public Key'"
-           :rules="[publicKeyRules.required]"
+           :rules="[inputRules.required]"
            outlined
          ></v-text-field>
        </v-col>
      </v-row>
    </div>
-    <div class="cipher-form__file-dropzone">
-      <v-row>
-        <v-col align-self="center">
-          <vue-dropzone
-            id="file-dropzone"
-            ref="fileDropzone"
-            :options="dropzoneOptions"
-            :useCustomSlot=true
-            @vdropzone-file-added="onFileAdded"
-          >
-            <div class="dropzone-custom-content">
-              <h3 class="dropzone-custom-title">Drag and drop to upload content</h3>
-              <div class="subtitle">...or click to select a file from your computer</div>
-            </div>
-          </vue-dropzone>
-        </v-col>
-      </v-row>
-    </div>
-    <div class="cipher-form__submit-button">
-      <v-btn outlined width="400px" color="success" @click="onSubmitForm">
-        Submit
-      </v-btn>
+    <div class="cipher-form__footer">
+      <div class="cipher-form__file-dropzone">
+        <v-row>
+          <v-col align-self="center">
+            <vue-dropzone
+              id="file-dropzone"
+              ref="fileDropzone"
+              :options="dropzoneOptions"
+              :useCustomSlot=true
+              @vdropzone-file-added="onFileAdded"
+            >
+              <div class="dropzone-custom-content">
+                <h3 class="dropzone-custom-title">Drag and drop to upload content</h3>
+                <div class="subtitle">...or click to select a file from your computer</div>
+              </div>
+            </vue-dropzone>
+          </v-col>
+        </v-row>
+      </div>
+      <div class="cipher-form__submit-button">
+        <v-btn outlined width="400px" color="success" @click="onSubmitForm">
+          Submit
+        </v-btn>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import ciphers from '../../assets/mocks/ciphers'
 import axios from 'axios'
+import fileSaver from 'file-saver'
+import moment from 'moment'
 import vueDropzone from 'vue2-dropzone'
 
 export default {
@@ -83,26 +87,29 @@ export default {
   components: {
     vueDropzone
   },
+  created () {
+    this.fetchCiphersData()
+  },
   data () {
     return {
-      ciphers,
-      selectedCipherId: 1,
+      ciphers: [],
+      selectedCipherId: '',
       isEncrypt: true,
       isSignedIn: localStorage.getItem('isSignedIn'),
       fileText: '',
       cipherOperations: [
         {
-          value: 'encrypt',
-          text: 'Encrypt'
+          value: 'encryption',
+          text: 'Encryption'
         },
         {
-          value: 'decrypt',
-          text: 'Decrypt'
+          value: 'decryption',
+          text: 'Decryption'
         }
       ],
-      selectedOperation: 'encrypt',
+      selectedOperation: 'encryption',
       publicKeyInput: '',
-      publicKeyRules: {
+      inputRules: {
         required: value => !!value || 'Required'
       },
       dropzoneOptions: {
@@ -116,6 +123,14 @@ export default {
     }
   },
   methods: {
+    fetchCiphersData () {
+      axios.get('https://localhost:5001/api/cipher').then((data) => {
+        this.ciphers = data.data
+      })
+        .catch((e) => {
+          console.log('error fetch', e)
+        })
+    },
     onFileAdded (file) {
       const fileReader = new FileReader()
 
@@ -124,31 +139,24 @@ export default {
         this.fileText = event.target.result
       }
     },
-    download (filename, text) {
-      const element = document.createElement('a')
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text))
-      element.setAttribute('download', filename)
+    downloadFile (text) {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
+      const currentDate = moment().format('YYYY-MM-DD_h-mm-ss')
+      const operation = this.selectedOperation === 'encryption' ? 'encrypted' : 'decrypted'
 
-      element.style.display = 'none'
-      document.body.appendChild(element)
-
-      element.click()
-
-      document.body.removeChild(element)
+      fileSaver.saveAs(blob, `${operation}_${currentDate}.txt`)
     },
     onSubmitForm () {
-      axios({
-        url: 'myuploadurl',
-        method: 'POTS',
-        data: {
-          text: this.fileText.trim(),
-          cipher: this.ciphers.find(cipher => cipher.id === this.selectedCipherId),
-          encrypt: this.selectedOperation === 'encrypt',
-          publicKey: this.publicKeyInput.trim()
-        }
-      }).then().catch(() => {
-        const currentDate = new Date()
-        this.download(`encrypted_${currentDate.getUTCMilliseconds()}`, this.fileText.trim())
+      axios.post('https://localhost:5001/api/cipher/process', {
+        data: this.fileText.trim(),
+        name: this.selectedCipher.name,
+        mode: this.selectedOperation,
+        key: this.publicKeyInput.trim()
+      }).then((data) => {
+        this.$refs.fileDropzone.removeAllFiles(true)
+        this.downloadFile(data.data.data)
+      }).catch((e) => {
+        console.log('error', e)
       })
     }
   },
@@ -156,8 +164,11 @@ export default {
     formattedCiphers () {
       return this.ciphers.map(cipher => ({
         text: cipher.name,
-        value: cipher.id
+        value: cipher.name
       }))
+    },
+    selectedCipher () {
+      return this.ciphers.find(cipher => cipher.name === this.selectedCipherId)
     }
   }
 }
@@ -170,9 +181,14 @@ export default {
     background-color: #ffffff;
     border-radius: 7px;
     box-shadow: 0 4px 25px 0 rgba(0,0,0,.1);
+    overflow: auto;
+
+    .vue-dropzone {
+      padding: 0;
+    }
 
     .dropzone-custom-content {
-      height: 170px;
+      height: 150px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -190,16 +206,15 @@ export default {
     .cipher-form__header {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 50px;
+      margin-bottom: 20px;
     }
 
     .cipher-form__submit-button {
       text-align: center;
-      margin: 50px 0 30px 0;
+      margin-top: 20px;
     }
 
     .cipher-form__inputs {
-      height: calc(100% - 610px);
       margin-bottom: 15px;
       overflow-y: auto;
       overflow-x: hidden;

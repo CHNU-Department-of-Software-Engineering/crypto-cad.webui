@@ -2,7 +2,6 @@
 using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Core.Utilities;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,7 +12,6 @@ using System.Security.Cryptography;
 namespace CryptoCAD.API.Controllers
 {
     [ApiController]
-    [EnableCors("MyPolicy")]
     [Route("api/cipher")]
     public class CipherController : ControllerBase
     {
