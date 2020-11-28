@@ -24,7 +24,7 @@ namespace CryptoCAD.Console
             var response = DESEncode(key, text);
             System.Console.WriteLine($"Encrypted text: {response.Data}\n");
 
-            var responseD = DESDecode(key, response.Data, response.IV);
+            var responseD = DESDecode(key, response.Data, 123);
             System.Console.WriteLine($"Decrypted text: {responseD.Data}\n");
 
             System.Console.ReadKey();
@@ -62,8 +62,8 @@ namespace CryptoCAD.Console
             return new CipherResponse
             {
                 Key = key,
-                Data = ConvertUtill.ToString(ret, ConvertMode.BASE64),
-                IV = BitConverter.ToUInt64(IV, 0)
+                Data = ConvertUtill.ToString(ret, ConvertMode.BASE64)
+                //IV = BitConverter.ToUInt64(IV, 0)
             };
         }
 

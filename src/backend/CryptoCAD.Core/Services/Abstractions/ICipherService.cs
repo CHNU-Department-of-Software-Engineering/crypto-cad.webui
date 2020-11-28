@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CryptoCAD.Core.Models.Ciphers;
 
 namespace CryptoCAD.Core.Services.Abstractions
 {
-    class ICipherService
+    public interface ICipherService
     {
+        CipherResult Process(CipherArguments args);
     }
 }

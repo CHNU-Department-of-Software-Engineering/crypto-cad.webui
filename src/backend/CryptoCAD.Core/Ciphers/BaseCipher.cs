@@ -4,18 +4,16 @@ using CryptoCAD.Core.Ciphers.Abstractions;
 
 namespace CryptoCAD.Core.Ciphers
 {
-    public abstract class BaseCipher : ICipher
+    internal abstract class BaseCipher : ICipher
     {
-        public abstract byte[] IV { get; }
-
         /// <inheritdoc/>
-        public byte[] Decrypt(byte[] key, byte[] data, byte[] IV)
+        public byte[] Decrypt(byte[] key, byte[] data)
         {
             byte[] decryptedData;
 
             using (var memoryStream = new MemoryStream(data))
             {
-                using (var cryptoStream = new CryptoStream(memoryStream, GetDecryptor(key, IV), CryptoStreamMode.Read))
+                using (var cryptoStream = new CryptoStream(memoryStream, GetDecryptor(key), CryptoStreamMode.Read))
                 {
                     decryptedData = new byte[data.Length];
 
@@ -27,14 +25,14 @@ namespace CryptoCAD.Core.Ciphers
         }
 
         /// <inheritdoc/>
-        public byte[] Encrypt(byte[] key, byte[] data, byte[] IV)
+        public byte[] Encrypt(byte[] key, byte[] data)
         {
             byte[] encryptedData;
 
             using (var memoryStream = new MemoryStream())
             {
 
-                using (var cryptoStream = new CryptoStream(memoryStream, GetEncryptor(key, IV), CryptoStreamMode.Write))
+                using (var cryptoStream = new CryptoStream(memoryStream, GetEncryptor(key), CryptoStreamMode.Write))
                 {
                     cryptoStream.Write(data, 0, data.Length);
                     cryptoStream.FlushFinalBlock();
@@ -46,8 +44,8 @@ namespace CryptoCAD.Core.Ciphers
             return encryptedData;
         }
 
-        protected abstract ICryptoTransform GetEncryptor(byte[] key, byte[] IV);
-        protected abstract ICryptoTransform GetDecryptor(byte[] key, byte[] IV);
+        protected abstract ICryptoTransform GetEncryptor(byte[] key);
+        protected abstract ICryptoTransform GetDecryptor(byte[] key);
 
         public abstract void Dispose();
     }

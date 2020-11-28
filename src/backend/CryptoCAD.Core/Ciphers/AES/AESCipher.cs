@@ -2,24 +2,28 @@
 
 namespace CryptoCAD.Core.Ciphers.AES
 {
-    public class AESCipher : BaseCipher
+    internal class AESCipher : BaseCipher
     {
-        private readonly Aes _aes;
+        /// TODO: Generate new IV
+        private static readonly byte[] IV = new byte[16]
+        {
+            133, 111, 234, 255, 191, 107, 55, 16,
+            233, 111, 234, 255, 191, 107, 55, 16
+        };
 
-        /// <inheritdoc/>
-        public override byte[] IV => _aes.IV;
+        private readonly Aes _aes;
 
         public AESCipher()
         {
             _aes = Aes.Create();
         }
 
-        protected override ICryptoTransform GetEncryptor(byte[] key, byte[] IV)
+        protected override ICryptoTransform GetEncryptor(byte[] key)
         {
             return _aes.CreateEncryptor(key, IV);
         }
 
-        protected override ICryptoTransform GetDecryptor(byte[] key, byte[] IV)
+        protected override ICryptoTransform GetDecryptor(byte[] key)
         {
             return _aes.CreateDecryptor(key, IV);
         }

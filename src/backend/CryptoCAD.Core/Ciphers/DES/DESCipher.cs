@@ -2,12 +2,14 @@
 
 namespace CryptoCAD.Core.Ciphers.DES
 {
-    public class DESCipher : BaseCipher
+    internal class DESCipher : BaseCipher
     {
-        private readonly System.Security.Cryptography.DES _des;
+        private static readonly byte[] IV = new byte[8]
+        {
+            133, 111, 234, 255, 191, 107, 55, 16
+        };
 
-        /// <inheritdoc/>
-        public override byte[] IV => _des.IV;
+        private readonly System.Security.Cryptography.DES _des;
 
         public DESCipher()
         {
@@ -15,12 +17,12 @@ namespace CryptoCAD.Core.Ciphers.DES
 
         }
 
-        protected override ICryptoTransform GetEncryptor(byte[] key, byte[] IV)
+        protected override ICryptoTransform GetEncryptor(byte[] key)
         {
             return _des.CreateEncryptor(key, IV);
         }
 
-        protected override ICryptoTransform GetDecryptor(byte[] key, byte[] IV)
+        protected override ICryptoTransform GetDecryptor(byte[] key)
         {
             return _des.CreateDecryptor(key, IV);
         }

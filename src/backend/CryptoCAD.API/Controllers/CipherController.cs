@@ -1,4 +1,6 @@
 ﻿using CryptoCAD.API.Models;
+using CryptoCAD.Core.Models.Ciphers;
+using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Core.Utilities;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +17,12 @@ namespace CryptoCAD.API.Controllers
     [Route("api/cipher")]
     public class CipherController : ControllerBase
     {
+        private readonly ICipherService CipherService;
         private readonly ILogger<CipherController> Logger;
 
-        public CipherController(ILogger<CipherController> logger)
+        public CipherController(ICipherService cipherService, ILogger<CipherController> logger)
         {
+            CipherService = cipherService;
             Logger = logger;
         }
 
@@ -32,6 +36,11 @@ namespace CryptoCAD.API.Controllers
                 {
                     Name = "des",
                     KeyLenghtBits = 64
+                },
+                new CipherModel
+                {
+                    Name = "aes",
+                    KeyLenghtBits = 128
                 }
             };
 
@@ -42,29 +51,42 @@ namespace CryptoCAD.API.Controllers
         [Route("process")]
         public ActionResult<CipherResponse> Process(CipherRequest request)
         {
+            
+
             try
             {
-                if (request.Mode == Models.CipherMode.Encypt)
+                if (string.IsNullOrEmpty(request.Name))
                 {
-                    var response = DESEncode(request.Key, request.Data);
-                    response.CipherId = request.CipherId;
-                    response.CipherName = request.CipherName;
-                    response.Mode = request.Mode;
-
-                    return Ok(response);
+                    throw new ArgumentNullException("Cipher name is required!");
                 }
-                else if (request.Mode == Models.CipherMode.Decrypt)
+                var operation = request.Mode == "encryption"
+                    ? CipherOperations.Encrypt
+                    : request.Mode == "decryption"
+                    ? CipherOperations.Decrypt
+                    : throw new NotSupportedException("Only 'encryption' and 'decryption' modes are supported!");
+
+                var key = ConvertUtill.FromString(request.Key, ConvertMode.UTF8);
+                var data = ConvertUtill.FromString(request.Data, operation == CipherOperations.Decrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
+
+                var cipherArgs = new CipherArguments()
                 {
-                    var response = DESDecode(request.Key, request.Data, request.IV);
-                    response.CipherId = request.CipherId;
-                    response.CipherName = request.CipherName;
-                    response.Mode = request.Mode;
-                    response.IV = request.IV;
+                    Name = request.Name,
+                    Operation = operation,
+                    Key = key,
+                    Data = data
+                };
 
-                    return Ok(response);
-                }
+                var result = CipherService.Process(cipherArgs);
 
-                return BadRequest("Cipher mode not specified!");
+                var dataResult = ConvertUtill.ToString(result.Data, operation == CipherOperations.Encrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
+
+                return Ok(new CipherResponse()
+                {
+                    Name = request.Name,
+                    Mode = request.Mode,
+                    Key = request.Key,
+                    Data = dataResult
+                });
             }
             catch (Exception exception)
             {
@@ -72,76 +94,76 @@ namespace CryptoCAD.API.Controllers
             }
         }
            
-        private CipherResponse DESEncode(string key, string data)
-        {
-            var key_b = ConvertUtill.FromString(key, ConvertMode.UTF8);
+        //private CipherResponse DESEncode(string key, string data)
+        //{
+        //    var key_b = ConvertUtill.FromString(key, ConvertMode.UTF8);
 
-            if (key_b.Length != 8)
-            {
-                throw new ArgumentException($"Key lenght should be 64-bit. Received key lenght: {key_b.Length}");
-            }
+        //    if (key_b.Length != 8)
+        //    {
+        //        throw new ArgumentException($"Key lenght should be 64-bit. Received key lenght: {key_b.Length}");
+        //    }
 
-            var memoryStream = new MemoryStream();
+        //    var memoryStream = new MemoryStream();
 
-            var DESalg = DES.Create();
-            DESalg.Padding = PaddingMode.Zeros;
+        //    var DESalg = DES.Create();
+        //    DESalg.Padding = PaddingMode.Zeros;
 
-            var IV = DESalg.IV;
+        //    var IV = DESalg.IV;
 
-            var cryptoStream = new CryptoStream(memoryStream, DESalg.CreateEncryptor(key_b, IV), CryptoStreamMode.Write);
+        //    var cryptoStream = new CryptoStream(memoryStream, DESalg.CreateEncryptor(key_b, IV), CryptoStreamMode.Write);
 
-            byte[] toEncrypt = ConvertUtill.FromString(data, ConvertMode.UTF8);
+        //    byte[] toEncrypt = ConvertUtill.FromString(data, ConvertMode.UTF8);
 
-            cryptoStream.Write(toEncrypt, 0, toEncrypt.Length);
-            cryptoStream.FlushFinalBlock();
+        //    cryptoStream.Write(toEncrypt, 0, toEncrypt.Length);
+        //    cryptoStream.FlushFinalBlock();
 
-            byte[] ret = memoryStream.ToArray();
+        //    byte[] ret = memoryStream.ToArray();
 
-            cryptoStream.Close();
-            memoryStream.Close();
+        //    cryptoStream.Close();
+        //    memoryStream.Close();
 
-            return new CipherResponse
-            {
-                Key = key,
-                Data = ConvertUtill.ToString(ret, ConvertMode.BASE64),
-                IV = BitConverter.ToUInt64(IV, 0),
-                DataB = ret
-            };
-        }
+        //    return new CipherResponse
+        //    {
+        //        Key = key,
+        //        Data = ConvertUtill.ToString(ret, ConvertMode.BASE64),
+        //        IV = BitConverter.ToUInt64(IV, 0),
+        //        DataB = ret
+        //    };
+        //}
 
-        private CipherResponse DESDecode(string key, string data, ulong IV)
-        {
-            var key_b = ConvertUtill.FromString(key, ConvertMode.UTF8);
+        //private CipherResponse DESDecode(string key, string data, ulong IV)
+        //{
+        //    var key_b = ConvertUtill.FromString(key, ConvertMode.UTF8);
 
-            if (key_b.Length != 8)
-            {
-                throw new ArgumentException($"Key lenght should be 64-bit. Received key lenght: {key_b.Length}");
-            }
+        //    if (key_b.Length != 8)
+        //    {
+        //        throw new ArgumentException($"Key lenght should be 64-bit. Received key lenght: {key_b.Length}");
+        //    }
 
-            byte[] toDecrypt = ConvertUtill.FromString(data, ConvertMode.BASE64);
+        //    byte[] toDecrypt = ConvertUtill.FromString(data, ConvertMode.BASE64);
 
-            var iv = BitConverter.GetBytes(IV);
+        //    var iv = BitConverter.GetBytes(IV);
 
-            var memoryStream = new MemoryStream(toDecrypt);
+        //    var memoryStream = new MemoryStream(toDecrypt);
 
-            var DESalg = DES.Create();
-            DESalg.Padding = PaddingMode.Zeros;
+        //    var DESalg = DES.Create();
+        //    DESalg.Padding = PaddingMode.Zeros;
 
-            var cryptoStream = new CryptoStream(memoryStream,
-                DESalg.CreateDecryptor(key_b, iv),
-                CryptoStreamMode.Read);
+        //    var cryptoStream = new CryptoStream(memoryStream,
+        //        DESalg.CreateDecryptor(key_b, iv),
+        //        CryptoStreamMode.Read);
 
-            byte[] fromEncrypt = new byte[toDecrypt.Length];
+        //    byte[] fromEncrypt = new byte[toDecrypt.Length];
 
-            cryptoStream.Read(fromEncrypt, 0, fromEncrypt.Length);
+        //    cryptoStream.Read(fromEncrypt, 0, fromEncrypt.Length);
 
-            var result = ConvertUtill.ToString(fromEncrypt, ConvertMode.UTF8);
+        //    var result = ConvertUtill.ToString(fromEncrypt, ConvertMode.UTF8);
 
-            return new CipherResponse
-            {
-                Key = key,
-                Data = result
-            };
-        }
+        //    return new CipherResponse
+        //    {
+        //        Key = key,
+        //        Data = result
+        //    };
+        //}
     }
 }
