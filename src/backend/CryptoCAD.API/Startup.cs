@@ -67,8 +67,7 @@ namespace CryptoCAD.API
                     builder
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowCredentials()
-                    .WithOrigins("https://localhost:5001");
+                    .AllowCredentials();
                 });
             });
 
