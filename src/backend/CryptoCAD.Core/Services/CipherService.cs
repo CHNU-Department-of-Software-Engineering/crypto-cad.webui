@@ -1,6 +1,7 @@
 ﻿using System;
 using CryptoCAD.Core.Ciphers.AES;
 using CryptoCAD.Core.Ciphers.DES;
+using CryptoCAD.Core.Ciphers.GOST;
 using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
@@ -31,6 +32,8 @@ namespace CryptoCAD.Core.Services
                     return new DESCipher();
                 case "aes":
                     return new AESCipher();
+                case "gost":
+                    return new GOSTCipher();
                 default:
                     throw new NotImplementedException($"Cipher '{name}' is not supported!");
             }
