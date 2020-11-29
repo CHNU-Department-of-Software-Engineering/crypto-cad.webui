@@ -4,6 +4,6 @@ namespace CryptoCAD.Core.Services.Abstractions
 {
     public interface ICipherService
     {
-        CipherResult Process(CipherArguments args);
+        byte[] Process(string name, CipherOperations operation, byte[] key, byte[] data);
     }
 }

@@ -9,29 +9,15 @@ namespace CryptoCAD.Core.Services
 {
     public class CipherService : ICipherService
     {
-        public CipherResult Process(CipherArguments args)
+        public byte[] Process(string name, CipherOperations operation, byte[] key, byte[] data)
         {
-            var cipher = GetCipher(args.Name);
-            switch (args.Operation)
+            var cipher = GetCipher(name);
+            switch (operation)
             {
                 case CipherOperations.Encrypt:
-                    var encriprionResult = cipher.Encrypt(args.Key, args.Data);
-                    return new CipherResult()
-                    {
-                        Name = args.Name,
-                        Operation = args.Operation,
-                        Key = args.Key,
-                        Data = encriprionResult
-                    };
+                    return cipher.Encrypt(key, data);
                 case CipherOperations.Decrypt:
-                    var decriptionResult = cipher.Decrypt(args.Key, args.Data);
-                    return new CipherResult()
-                    {
-                        Name = args.Name,
-                        Operation = args.Operation,
-                        Key = args.Key,
-                        Data = decriptionResult
-                    };
+                    return cipher.Decrypt(key, data);
                 default:
                     throw new NotImplementedException("Cipher operation is not supported!");
             }
