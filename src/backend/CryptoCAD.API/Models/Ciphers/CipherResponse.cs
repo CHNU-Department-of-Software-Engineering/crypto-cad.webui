@@ -1,4 +1,4 @@
-﻿namespace CryptoCAD.API.Models
+﻿namespace CryptoCAD.API.Models.Ciphers
 {
     public class CipherResponse
     {

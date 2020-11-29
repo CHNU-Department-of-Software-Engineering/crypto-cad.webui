@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using CryptoCAD.API.Models;
 using CryptoCAD.Core.Utilities;
 using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
