@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     fetchCiphersData () {
-      axios.get('https://localhost:5001/api/cipher').then((data) => {
+      axios.get('https://localhost:5001/api/ciphers').then((data) => {
         this.ciphers = data.data
       })
         .catch((e) => {
@@ -147,7 +147,7 @@ export default {
       fileSaver.saveAs(blob, `${operation}_${currentDate}.txt`)
     },
     onSubmitForm () {
-      axios.post('https://localhost:5001/api/cipher/process', {
+      axios.post('https://localhost:5001/api/ciphers/process', {
         data: this.fileText.trim(),
         name: this.selectedCipher.name,
         mode: this.selectedOperation,
