@@ -6,6 +6,7 @@ using CryptoCAD.API.Models;
 using CryptoCAD.Core.Utilities;
 using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
+using CryptoCAD.API.Models.Ciphers;
 
 namespace CryptoCAD.API.Controllers
 {
@@ -24,23 +25,40 @@ namespace CryptoCAD.API.Controllers
 
         [HttpGet]
         [Route("")]
-        public ActionResult<IEnumerable<CipherModel>> GetCiphers()
+        public ActionResult<IEnumerable<CipherInfo>> GetCiphers()
         {
-            var ciphers = new List<CipherModel>()
+            var ciphersInfo = new List<CipherInfo>()
             {
-                new CipherModel
+                new CipherInfo
                 {
                     Name = "des",
-                    KeyLenghtBits = 64
+                    Key = new KeyInfo
+                    {
+                        Type = typeof(string).Name,
+                        Lenght = 8
+                    }
                 },
-                new CipherModel
+                new CipherInfo
                 {
                     Name = "aes",
-                    KeyLenghtBits = 128
+                    Key = new KeyInfo
+                    {
+                        Type = typeof(string).Name,
+                        Lenght = 16
+                    }
+                },
+                new CipherInfo
+                {
+                    Name = "gost",
+                    Key = new KeyInfo
+                    {
+                        Type = typeof(string).Name,
+                        Lenght = 32
+                    }
                 }
             };
 
-            return Ok(ciphers);
+            return Ok(ciphersInfo);
         }
 
         [HttpPost]
