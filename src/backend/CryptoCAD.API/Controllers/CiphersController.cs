@@ -10,13 +10,13 @@ using CryptoCAD.Core.Services.Abstractions;
 namespace CryptoCAD.API.Controllers
 {
     [ApiController]
-    [Route("api/cipher")]
-    public class CipherController : ControllerBase
+    [Route("api/ciphers")]
+    public class CiphersController : ControllerBase
     {
         private readonly ICipherService CipherService;
-        private readonly ILogger<CipherController> Logger;
+        private readonly ILogger<CiphersController> Logger;
 
-        public CipherController(ICipherService cipherService, ILogger<CipherController> logger)
+        public CiphersController(ICipherService cipherService, ILogger<CiphersController> logger)
         {
             CipherService = cipherService;
             Logger = logger;
