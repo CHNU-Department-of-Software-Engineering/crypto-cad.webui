@@ -1,4 +1,3 @@
-using CryptoCAD.Data;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -10,6 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using CryptoCAD.Core.Services;
 using CryptoCAD.Core.Services.Abstractions;
+using CryptoCAD.Data.Repositories;
+using CryptoCAD.Data.EntityFramework;
+using CryptoCAD.Domain.Repositories;
 
 namespace CryptoCAD.API
 {
@@ -84,6 +86,7 @@ namespace CryptoCAD.API
         private void AddServices(IServiceCollection services)
         {
             services.AddTransient<ICipherService, CipherService>();
+            services.AddTransient<ICipherSetupRepository, CipherSetupRepository>();
         }
     }
 }

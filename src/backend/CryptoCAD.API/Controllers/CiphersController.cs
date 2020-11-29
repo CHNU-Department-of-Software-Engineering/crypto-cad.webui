@@ -6,6 +6,7 @@ using CryptoCAD.Core.Utilities;
 using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.API.Models.Ciphers;
+using CryptoCAD.Domain.Repositories;
 
 namespace CryptoCAD.API.Controllers
 {
@@ -15,11 +16,13 @@ namespace CryptoCAD.API.Controllers
     {
         private readonly ICipherService CipherService;
         private readonly ILogger<CiphersController> Logger;
+        private readonly ICipherSetupRepository CipherSetupRepository;
 
-        public CiphersController(ICipherService cipherService, ILogger<CiphersController> logger)
+        public CiphersController(ICipherService cipherService, ILogger<CiphersController> logger, ICipherSetupRepository cipherSetupRepository)
         {
             CipherService = cipherService;
             Logger = logger;
+            CipherSetupRepository = cipherSetupRepository;
         }
 
         [HttpGet]
@@ -95,6 +98,21 @@ namespace CryptoCAD.API.Controllers
             {
                 return BadRequest($"Exception occured: {exception}");
             }
+        }
+
+        [HttpGet]
+        [Route("testdb")]
+        public ActionResult Go()
+        {
+            var entity = new Domain.Entities.CipherSetup
+            {
+                Id = new Guid(),
+                Name = "Test test test"
+            };
+
+            CipherSetupRepository.Add(entity);
+
+            return Ok();
         }
     }
 }
