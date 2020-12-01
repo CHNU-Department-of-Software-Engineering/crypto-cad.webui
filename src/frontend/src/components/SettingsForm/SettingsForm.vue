@@ -2,77 +2,81 @@
   <div class="cipher-form__wrapper">
     <div class="cipher-form__header">
       <h2 class="cipher-form__title">Settings</h2>
-      <v-tooltip top>
+      <v-tooltip top :disabled="isSignedIn">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="success"
-            v-bind="attrs"
-            v-on="isSignedIn ? on : null"
-            outlined
-            :disabled="!isSignedIn"
-          >
-            Add new Cipher
-          </v-btn>
+          <div v-on="on" v-bind="attrs">
+            <v-btn
+              color="success"
+              outlined
+              :disabled="!isSignedIn"
+            >
+              Add new Cipher
+            </v-btn>
+          </div>
         </template>
-        <span>Tooltip</span>
+        <span>Only Signed In Users can create new cipher</span>
       </v-tooltip>
     </div>
-    <v-row>
-      <v-col cols="4">
-        <v-select
-          v-model="selectedCipherId"
-          :items="formattedCiphers"
-          :rules="[inputRules.required]"
-          label="Select Cipher"
-          outlined
-        ></v-select>
-      </v-col>
-      <v-col offset="4" cols="4">
-        <v-select
-          v-model="selectedOperation"
-          :items="cipherOperations"
-          label="Select Operation"
-          outlined
-        ></v-select>
-      </v-col>
-    </v-row>
-   <div class="cipher-form__inputs">
-     <v-row>
-       <v-col cols="12">
-         <v-text-field
-           v-model="publicKeyInput"
-           :label="'Public Key'"
-           :rules="[inputRules.required]"
-           outlined
-         ></v-text-field>
-       </v-col>
-     </v-row>
-   </div>
-    <div class="cipher-form__footer">
-      <div class="cipher-form__file-dropzone">
+    <v-form v-model="isFormValid">
+      <v-row>
+        <v-col cols="4">
+          <v-select
+            v-model="selectedCipherId"
+            :items="formattedCiphers"
+            :rules="[inputRules.required]"
+            label="Select Cipher"
+            outlined
+            required
+          ></v-select>
+        </v-col>
+        <v-col offset="4" cols="4">
+          <v-select
+            v-model="selectedOperation"
+            :items="cipherOperations"
+            label="Select Operation"
+            outlined
+          ></v-select>
+        </v-col>
+      </v-row>
+      <div class="cipher-form__inputs">
         <v-row>
-          <v-col align-self="center">
-            <vue-dropzone
-              id="file-dropzone"
-              ref="fileDropzone"
-              :options="dropzoneOptions"
-              :useCustomSlot=true
-              @vdropzone-queue-complete="onFileUploadComplete"
-            >
-              <div class="dropzone-custom-content">
-                <h3 class="dropzone-custom-title">Drag and drop to upload .txt file</h3>
-                <div class="subtitle">...or click to select a .txt file from your computer</div>
-              </div>
-            </vue-dropzone>
+          <v-col cols="12">
+            <v-text-field
+              v-model="publicKeyInput"
+              :label="'Public Key'"
+              :rules="[inputRules.required]"
+              required
+              outlined
+            ></v-text-field>
           </v-col>
         </v-row>
       </div>
-      <div class="cipher-form__submit-button">
-        <v-btn outlined width="400px" color="success" @click="onSubmitForm">
-          Submit
-        </v-btn>
+      <div class="cipher-form__footer">
+        <div class="cipher-form__file-dropzone">
+          <v-row>
+            <v-col align-self="center">
+              <vue-dropzone
+                id="file-dropzone"
+                ref="fileDropzone"
+                :options="dropzoneOptions"
+                :useCustomSlot=true
+                @vdropzone-queue-complete="onFileUploadComplete"
+              >
+                <div class="dropzone-custom-content">
+                  <h3 class="dropzone-custom-title">Drag and drop to upload .txt file</h3>
+                  <div class="subtitle">...or click to select a .txt file from your computer</div>
+                </div>
+              </vue-dropzone>
+            </v-col>
+          </v-row>
+        </div>
+        <div class="cipher-form__submit-button">
+          <v-btn :disabled="!isFormValid || !this.fileText" outlined width="400px" color="success" @click="onSubmitForm">
+            Submit
+          </v-btn>
+        </div>
       </div>
-    </div>
+    </v-form>
   </div>
 </template>
 
@@ -92,11 +96,11 @@ export default {
   },
   data () {
     return {
+      isFormValid: true,
       showTitle: true,
       ciphers: [],
       selectedCipherId: '',
       isEncrypt: true,
-      isSignedIn: localStorage.getItem('isSignedIn'),
       fileText: '',
       cipherOperations: [
         {
@@ -183,6 +187,9 @@ export default {
     }
   },
   computed: {
+    isSignedIn () {
+      return this.$store.state.auth.status.signedIn
+    },
     formattedCiphers () {
       return this.ciphers.map(cipher => ({
         text: cipher.name,
@@ -285,6 +292,7 @@ export default {
     .cipher-form__submit-button {
       text-align: center;
       margin-top: 20px;
+      cursor: pointer;
     }
 
     .cipher-form__inputs {
