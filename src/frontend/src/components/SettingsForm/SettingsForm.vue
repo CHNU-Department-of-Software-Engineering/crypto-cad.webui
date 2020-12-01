@@ -1,7 +1,7 @@
 <template>
   <div class="cipher-form__wrapper">
     <div class="cipher-form__header">
-      <h2 class="cipher-form__title">Cipher Settings</h2>
+      <h2 class="cipher-form__title">Settings</h2>
       <v-tooltip top>
         <template v-slot:activator="{ on, attrs }">
           <v-btn
@@ -57,11 +57,11 @@
               ref="fileDropzone"
               :options="dropzoneOptions"
               :useCustomSlot=true
-              @vdropzone-file-added="onFileAdded"
+              @vdropzone-queue-complete="onFileUploadComplete"
             >
               <div class="dropzone-custom-content">
-                <h3 class="dropzone-custom-title">Drag and drop to upload content</h3>
-                <div class="subtitle">...or click to select a file from your computer</div>
+                <h3 class="dropzone-custom-title">Drag and drop to upload .txt file</h3>
+                <div class="subtitle">...or click to select a .txt file from your computer</div>
               </div>
             </vue-dropzone>
           </v-col>
@@ -83,7 +83,7 @@ import moment from 'moment'
 import vueDropzone from 'vue2-dropzone'
 
 export default {
-  name: 'CipherForm',
+  name: 'EncryptDecryptForm',
   components: {
     vueDropzone
   },
@@ -92,6 +92,7 @@ export default {
   },
   data () {
     return {
+      showTitle: true,
       ciphers: [],
       selectedCipherId: '',
       isEncrypt: true,
@@ -117,8 +118,29 @@ export default {
         acceptedFiles: 'text/plain, application/rtf',
         maxFilesize: 12.5, // MB
         maxFiles: 1,
-        manuallyAddFile: true,
-        autoProcessQueue: false
+        addRemoveLinks: true,
+        autoProcessQueue: false,
+        dictDefaultMessage: `
+            <div>
+              <div>test</div>
+              <div>test 2</div>
+            </div>`,
+        previewTemplate: `
+          <div class="dz-preview dz-file-preview">
+            <div class="dz-image">
+              <div data-dz-thumbnail-bg></div>
+            </div>
+            <div class="dz-details">
+              <div class="dz-filename"><span data-dz-name></span></div>
+              <div class="dz-size"><span data-dz-size></span></div>
+              <div class="dz-error-mark">Cannot upload file </br> (hover to see details)</i></div>
+            </div>
+            <div class="dz-error-message"><span data-dz-errormessage></span></div>
+            <div class="dz-remove-custom" href="javascript:undefined;" data-dz-remove="">
+              <i class="fa fa-close dz-remove-custom-icon"></i>
+            </div>
+          </div>
+        `
       }
     }
   },
@@ -131,7 +153,7 @@ export default {
           console.log('error fetch', e)
         })
     },
-    onFileAdded (file) {
+    onFileUploadComplete (file) {
       const fileReader = new FileReader()
 
       fileReader.readAsText(file)
@@ -174,7 +196,7 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
   .cipher-form__wrapper {
     height: 100%;
     padding: 20px 60px;
@@ -187,19 +209,70 @@ export default {
       padding: 0;
     }
 
-    .dropzone-custom-content {
-      height: 150px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
+    #file-dropzone {
+      height: 154px;
 
-      .dropzone-custom-title {
-        color: #00b782;
+      .dropzone-custom-content {
+        height: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+
+        .dropzone-custom-title {
+          color: #00b782;
+        }
+
+        .subtitle {
+          color: #314b5f;
+        }
       }
 
-      .subtitle {
-        color: #314b5f;
+      .dz-message {
+        margin: 0;
+      }
+
+      .dz-preview {
+        position: relative;
+        height: 130px;
+        width: 130px;
+        box-sizing: border-box;
+        margin: 10px;
+
+        .dz-details {
+          padding: 30px 10px 10px 10px;
+        }
+
+        .dz-size {
+          margin: 8px 0;
+          text-align: center;
+        }
+
+        .dz-progress, .dz-remove {
+          display: none;
+        }
+
+        .dz-error-mark {
+          cursor: pointer;
+          position: initial;
+          text-align: center;
+          font-size: 10px;
+          color: #be2626;
+        }
+
+        .dz-remove-custom {
+          position: absolute;
+          z-index: 20;
+          height: 16px;
+          width: 16px;
+          top: 5px;
+          right: 5px;
+          color: white;
+
+          .dz-remove-custom-icon {
+            cursor: pointer;
+          }
+        }
       }
     }
 

@@ -1,16 +1,16 @@
 <template>
   <div class="home-page-wrapper">
-    <CipherForm></CipherForm>
+    <SettingsForm></SettingsForm>
   </div>
 </template>
 
 <script lang="ts">
-import CipherForm from '../components/CipherForm/CipherForm.vue'
+import SettingsForm from '../components/SettingsForm/SettingsForm.vue'
 
 export default {
   name: 'Home',
   components: {
-    CipherForm
+    SettingsForm
   }
 }
 </script>
