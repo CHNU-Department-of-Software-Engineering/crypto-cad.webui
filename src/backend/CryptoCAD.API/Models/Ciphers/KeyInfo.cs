@@ -5,7 +5,7 @@
         private const byte CharEncodingLenght = 8;
 
         public string Type { get; set; }
-        public byte Lenght { get; set; }
-        public short BitLenght => (short)(Lenght * CharEncodingLenght);
+        public byte Length { get; set; }
+        public short BitLenght => (short)(Length * CharEncodingLenght);
     }
 }

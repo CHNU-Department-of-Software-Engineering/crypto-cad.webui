@@ -115,7 +115,7 @@
         };
 
         public const byte ROTATIONS_TABLE_LENGHT = 16;
-        public static readonly byte[] Rotations = new byte[ROTATIONS_TABLE_LENGHT] {
+        public static readonly byte[] ROTATIONS = new byte[ROTATIONS_TABLE_LENGHT] {
             1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
         };
     }
