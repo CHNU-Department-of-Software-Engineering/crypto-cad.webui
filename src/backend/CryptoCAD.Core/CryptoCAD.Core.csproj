@@ -8,4 +8,8 @@
     <ProjectReference Include="..\CryptoCAD.Data\CryptoCAD.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Ciphers\DES\Factory\" />
+  </ItemGroup>
+
 </Project>

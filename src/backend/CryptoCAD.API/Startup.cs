@@ -29,9 +29,9 @@ namespace CryptoCAD.API
         {
             services.AddControllers();
 
-            services.AddDbContext<PostgreSqlContext>(options => options.UseNpgsql(Configuration.GetConnectionString("HerokuPostgresql")));
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<PostgreSqlContext>();
+            //services.AddDbContext<PostgreSqlContext>(options => options.UseNpgsql(Configuration.GetConnectionString("HerokuPostgresql")));
+            //services.AddIdentity<IdentityUser, IdentityRole>()
+            //    .AddEntityFrameworkStores<PostgreSqlContext>();
 
             AddServices(services);
 
@@ -86,7 +86,7 @@ namespace CryptoCAD.API
         private void AddServices(IServiceCollection services)
         {
             services.AddTransient<ICipherService, CipherService>();
-            services.AddTransient<ICipherSetupRepository, CipherSetupRepository>();
+            //services.AddTransient<ICipherSetupRepository, CipherSetupRepository>();
         }
     }
 }

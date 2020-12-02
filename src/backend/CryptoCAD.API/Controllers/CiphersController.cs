@@ -16,13 +16,13 @@ namespace CryptoCAD.API.Controllers
     {
         private readonly ICipherService CipherService;
         private readonly ILogger<CiphersController> Logger;
-        private readonly ICipherSetupRepository CipherSetupRepository;
+        //private readonly ICipherSetupRepository CipherSetupRepository;
 
-        public CiphersController(ICipherService cipherService, ILogger<CiphersController> logger, ICipherSetupRepository cipherSetupRepository)
+        public CiphersController(ICipherService cipherService, ILogger<CiphersController> logger)//, ICipherSetupRepository cipherSetupRepository)
         {
             CipherService = cipherService;
             Logger = logger;
-            CipherSetupRepository = cipherSetupRepository;
+            //CipherSetupRepository = cipherSetupRepository;
         }
 
         [HttpGet]
@@ -110,7 +110,7 @@ namespace CryptoCAD.API.Controllers
                 Name = "Test test test"
             };
 
-            CipherSetupRepository.Add(entity);
+            //CipherSetupRepository.Add(entity);
 
             return Ok();
         }
