@@ -2,20 +2,38 @@
   <div class="cipher-form__wrapper">
     <div class="cipher-form__header">
       <h2 class="cipher-form__title">Settings</h2>
-      <v-tooltip top :disabled="isSignedIn">
-        <template v-slot:activator="{ on, attrs }">
-          <div v-on="on" v-bind="attrs">
-            <v-btn
-              color="success"
-              outlined
-              :disabled="!isSignedIn"
-            >
-              Add new Cipher
-            </v-btn>
-          </div>
-        </template>
-        <span>Only Signed In Users can create new cipher</span>
-      </v-tooltip>
+      <div class="header-buttons">
+        <v-tooltip top :disabled="isSignedIn">
+          <template v-slot:activator="{ on, attrs }">
+            <div class="header-button" @click="navigateToModifyForm" v-on="on" v-bind="attrs">
+              <v-btn
+                width="150"
+                color="warning"
+                outlined
+                :disabled="isSignedIn"
+              >
+                Modify
+              </v-btn>
+            </div>
+          </template>
+          <span>Only Signed In Users can modify existed items</span>
+        </v-tooltip>
+        <v-tooltip top :disabled="isSignedIn">
+          <template v-slot:activator="{ on, attrs }">
+            <div class="header-button" v-on="on" v-bind="attrs">
+              <v-btn
+                width="150"
+                color="success"
+                outlined
+                :disabled="!isSignedIn"
+              >
+                Add new
+              </v-btn>
+            </div>
+          </template>
+          <span>Only Signed In Users can create new item</span>
+        </v-tooltip>
+      </div>
     </div>
     <v-form v-model="isFormValid">
       <v-row>
@@ -43,8 +61,12 @@
           <v-col cols="12">
             <v-text-field
               v-model="publicKeyInput"
-              :label="'Public Key'"
-              :rules="[inputRules.required]"
+              :label="'Key'"
+              :rules="[
+                inputRules.required,
+                (value) => inputRules.maxLength(value, selectedCipher.key.lenght),
+                (value) => inputRules.minLength(value, selectedCipher.key.lenght)
+              ]"
               required
               outlined
             ></v-text-field>
@@ -60,7 +82,7 @@
                 ref="fileDropzone"
                 :options="dropzoneOptions"
                 :useCustomSlot=true
-                @vdropzone-queue-complete="onFileUploadComplete"
+                @vdropzone-file-added="onFileAdded"
               >
                 <div class="dropzone-custom-content">
                   <h3 class="dropzone-custom-title">Drag and drop to upload .txt file</h3>
@@ -71,7 +93,7 @@
           </v-row>
         </div>
         <div class="cipher-form__submit-button">
-          <v-btn :disabled="!isFormValid || !this.fileText" outlined width="400px" color="success" @click="onSubmitForm">
+          <v-btn :disabled="!isFormValid" outlined width="400px" color="success" @click="onSubmitForm">
             Submit
           </v-btn>
         </div>
@@ -115,7 +137,9 @@ export default {
       selectedOperation: 'encryption',
       publicKeyInput: '',
       inputRules: {
-        required: value => !!value || 'Required'
+        required: value => !!value || 'Required',
+        maxLength: (value, length) => (value && value.length >= length) || `Key length must be ${length} characters. Now ${value.length} characters`,
+        minLength: (value, length) => (value && value.length <= length) || `Key length must be ${length} characters. Now ${value.length} characters`
       },
       dropzoneOptions: {
         url: 'fake_url',
@@ -149,6 +173,9 @@ export default {
     }
   },
   methods: {
+    navigateToModifyForm () {
+      this.$router.push('/modify')
+    },
     fetchCiphersData () {
       axios.get('https://localhost:5001/api/ciphers').then((data) => {
         this.ciphers = data.data
@@ -157,7 +184,7 @@ export default {
           console.log('error fetch', e)
         })
     },
-    onFileUploadComplete (file) {
+    onFileAdded (file) {
       const fileReader = new FileReader()
 
       fileReader.readAsText(file)
@@ -204,6 +231,17 @@ export default {
 </script>
 
 <style lang="scss">
+  .header-buttons {
+    display: flex;
+
+    .header-button {
+      margin-left: 20px;
+
+      a {
+        text-decoration: none;
+      }
+    }
+  }
   .cipher-form__wrapper {
     height: 100%;
     padding: 20px 60px;
@@ -296,7 +334,7 @@ export default {
     }
 
     .cipher-form__inputs {
-      margin-bottom: 15px;
+      margin-bottom: 95px;
       overflow-y: auto;
       overflow-x: hidden;
     }
