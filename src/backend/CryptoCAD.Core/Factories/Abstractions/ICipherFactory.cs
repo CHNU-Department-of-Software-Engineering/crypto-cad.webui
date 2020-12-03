@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CryptoCAD.Core.Factories.Abstractions
 {
-    class ICipherFactory
+    public interface ICipherFactory
     {
     }
 }

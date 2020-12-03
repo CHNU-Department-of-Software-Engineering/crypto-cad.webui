@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Ciphers\DES\Factory\" />
+    <Folder Include="Factories\Models\" />
   </ItemGroup>
 
 </Project>
