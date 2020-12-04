@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CryptoCAD.Core.Utilities
 {
@@ -107,6 +105,57 @@ namespace CryptoCAD.Core.Utilities
             }
 
             return output;
+        }
+
+        public static ulong[] SplitDataToBlocks64b(byte[] data)
+        {
+            var solidBlocks = data.Length / 8;
+            var needed = (data.Length - solidBlocks * 8);
+
+            var length = solidBlocks + (needed == 0 ? 0 : 1);
+
+            var blocks64b = new ulong[length];
+
+            byte index = 0;
+            for (byte i = 0; i < data.Length; i += 8)
+            {
+                if (index > solidBlocks) break;
+                try
+                {
+                    blocks64b[index] = BitConverter.ToUInt64(data, i);
+                }
+                catch (Exception)
+                {
+                    var b = new byte[8];
+                    byte ind = 0;
+                    for (byte j = i; j < data.Length; j++)
+                    {
+                        b[ind++] = data[j];
+                    }
+                    blocks64b[index] = BitConverter.ToUInt64(b, 0);
+                }
+                index++;
+            }
+
+            return blocks64b;
+        }
+
+        public static byte[] JoinBlocks64bToData(ulong[] blocks64b)
+        {
+            var bytes = new byte[blocks64b.Length * 8];
+
+            byte index = 0;
+            for (byte i = 0; i < blocks64b.Length; i++)
+            {
+                var b = BitConverter.GetBytes(blocks64b[i]);
+                for (byte j = 0; j < b.Length; j++)
+                {
+                    bytes[index++] = b[j];
+                }
+            }
+
+
+            return bytes;
         }
     }
 }

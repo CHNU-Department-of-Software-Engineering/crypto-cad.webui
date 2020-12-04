@@ -5,7 +5,7 @@ namespace CryptoCAD.Core.Utilities
 {
     public static class ConvertUtill
     {
-        public static string ToString(byte[] data, ConvertMode mode)
+        public static string ToString(byte[] data, ConvertMode mode = ConvertMode.UTF8)
         {
             switch (mode)
             {
@@ -20,7 +20,7 @@ namespace CryptoCAD.Core.Utilities
             }
         }
 
-        public static byte[] FromString(string data, ConvertMode mode)
+        public static byte[] FromString(string data, ConvertMode mode = ConvertMode.UTF8)
         {
             switch (mode)
             {
