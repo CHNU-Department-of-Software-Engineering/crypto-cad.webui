@@ -1,167 +1,97 @@
 <template>
-  <div>
-    <h2>DES Modify</h2>
-    <v-row>
-      <v-col cols="6">
-        <PermutationTable
-          title="Initial Permutation"
-          :table-data="[
-        58,
-        50,
-        42,
-        34,
-        26,
-        18,
-        10,
-        2,
-        60,
-        52,
-        44,
-        36,
-        28,
-        20,
-        12,
-        4,
-        62,
-        54,
-        46,
-        38,
-        30,
-        22,
-        14,
-        6,
-        64,
-        56,
-        48,
-        40,
-        32,
-        24,
-        16,
-        8,
-        57,
-        49,
-        41,
-        33,
-        25,
-        17,
-        9,
-        1,
-        59,
-        51,
-        43,
-        35,
-        27,
-        19,
-        11,
-        3,
-        61,
-        53,
-        45,
-        37,
-        29,
-        21,
-        13,
-        5,
-        63,
-        55,
-        47,
-        39,
-        31,
-        23,
-        15,
-        7
-      ]"
-          columns-number="8"
-        ></PermutationTable>
-      </v-col>
-      <v-col cols="6">
-        <PermutationTable
-          title="Final Permutation"
-          :table-data="[
-        58,
-        50,
-        42,
-        34,
-        26,
-        18,
-        10,
-        2,
-        60,
-        52,
-        44,
-        36,
-        28,
-        20,
-        12,
-        4,
-        62,
-        54,
-        46,
-        38,
-        30,
-        22,
-        14,
-        6,
-        64,
-        56,
-        48,
-        40,
-        32,
-        24,
-        16,
-        8,
-        57,
-        49,
-        41,
-        33,
-        25,
-        17,
-        9,
-        1,
-        59,
-        51,
-        43,
-        35,
-        27,
-        19,
-        11,
-        3,
-        61,
-        53,
-        45,
-        37,
-        29,
-        21,
-        13,
-        5,
-        63,
-        55,
-        47,
-        39,
-        31,
-        23,
-        15,
-        7
-      ]"
-          columns-number="8"
-        ></PermutationTable>
-      </v-col>
-    </v-row>
+  <div class="des-container">
+    <v-expansion-panels multiple>
+      <PermutationTable
+        @checkForTableEdit="onInitialPermutationTableEdit"
+        :table-data="configuration['InitialPermutationTable']"
+        :columns-number="8"
+        title="Initial Permutation Table"
+      ></PermutationTable>
+      <RoundTables
+        @checkForTableEdit="onRoundTablesEdit"
+        :configuration="configuration"
+      ></RoundTables>
+      <PermutationTable
+        @checkForTableEdit="onFinalPermutationTableEdit"
+        :table-data="configuration['FinalPermutationTable']"
+        :columns-number="8"
+        title="Final Permutation Table"
+      ></PermutationTable>
+      <PermutationTable
+        @checkForTableEdit="onRotationsTableEdit"
+        :table-data="configuration['RotationsTable']"
+        :columns-number="8"
+        title="Rotations Table"
+      ></PermutationTable>
+      <PermutedChoiceTables
+        @checkForTableEdit="onPermutedChoiceTablesEdit"
+        :configuration="configuration"
+      ></PermutedChoiceTables>
+    </v-expansion-panels>
   </div>
 </template>
 
 <script>
-import PermutationTable from '../PermutationTable'
+import PermutationTable from './PermutationTable'
+import RoundTables from './RoundTables'
+import PermutedChoiceTables from './PermutedChoiceTables'
 
 export default {
   name: 'DESModifyForm',
   components: {
-    PermutationTable
+    PermutationTable,
+    RoundTables,
+    PermutedChoiceTables
+  },
+  props: ['configuration'],
+  data () {
+    return {
+      isInitialPermutationTableEdited: false,
+      isRoundTablesEdited: false,
+      isFinalPermutationTableEdited: false,
+      isRotationsTableEdited: false,
+      isPermutedChoiceTablesEdited: false
+    }
+  },
+  methods: {
+    onInitialPermutationTableEdit (value) {
+      this.isInitialPermutationTableEdited = value
+      this.checkForModifications()
+    },
+    onRoundTablesEdit (value) {
+      this.isRoundTablesEdited = value
+      this.checkForModifications()
+    },
+    onFinalPermutationTableEdit (value) {
+      this.isFinalPermutationTableEdited = value
+      this.checkForModifications()
+    },
+    onRotationsTableEdit (value) {
+      this.isRotationsTableEdited = value
+      this.checkForModifications()
+    },
+    onPermutedChoiceTablesEdit (value) {
+      this.isPermutedChoiceTablesEdited = value
+      this.checkForModifications()
+    },
+    checkForModifications () {
+      this.$emit('checkForModifications',
+        this.isInitialPermutationTableEdited ||
+        this.isRoundTablesEdited ||
+        this.isFinalPermutationTableEdited ||
+        this.isRotationsTableEdited ||
+        this.isPermutedChoiceTablesEdited
+      )
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+  .des-container {
+    display: flex;
+    justify-content: center;
+  }
   h2 {
     margin-bottom: 50px;
   }

@@ -19,7 +19,7 @@ export default {
   .home-page-wrapper {
     background-color: #f5f5f5;
     height: calc(100vh - 60px);
-    padding: 20px 50px;
+    padding: 20px 40px;
     font-family: 'Montserrat', sans-serif;
   }
 </style>

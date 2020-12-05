@@ -5,21 +5,6 @@
       <div class="header-buttons">
         <v-tooltip top :disabled="isSignedIn">
           <template v-slot:activator="{ on, attrs }">
-            <div class="header-button" @click="navigateToModifyForm" v-on="on" v-bind="attrs">
-              <v-btn
-                width="150"
-                color="warning"
-                outlined
-                :disabled="isSignedIn"
-              >
-                Modify
-              </v-btn>
-            </div>
-          </template>
-          <span>Only Signed In Users can modify existed items</span>
-        </v-tooltip>
-        <v-tooltip top :disabled="isSignedIn">
-          <template v-slot:activator="{ on, attrs }">
             <div class="header-button" v-on="on" v-bind="attrs">
               <v-btn
                 width="150"
@@ -73,6 +58,9 @@
           </v-col>
         </v-row>
       </div>
+      <div v-if="selectedCipher" class="modify-form">
+        <ModifyForm :configuration="JSON.parse(selectedCipher.configuration)"></ModifyForm>
+      </div>
       <div class="cipher-form__footer">
         <div class="cipher-form__file-dropzone">
           <v-row>
@@ -107,11 +95,13 @@ import axios from 'axios'
 import fileSaver from 'file-saver'
 import moment from 'moment'
 import vueDropzone from 'vue2-dropzone'
+import ModifyForm from '../ModifyForm/ModifyForm'
 
 export default {
   name: 'EncryptDecryptForm',
   components: {
-    vueDropzone
+    vueDropzone,
+    ModifyForm
   },
   created () {
     this.fetchCiphersData()
@@ -220,11 +210,11 @@ export default {
     formattedCiphers () {
       return this.ciphers.map(cipher => ({
         text: cipher.name,
-        value: cipher.name
+        value: cipher.id
       }))
     },
     selectedCipher () {
-      return this.ciphers.find(cipher => cipher.name === this.selectedCipherId)
+      return this.ciphers.find(cipher => cipher.id === this.selectedCipherId)
     }
   }
 }
@@ -244,7 +234,7 @@ export default {
   }
   .cipher-form__wrapper {
     height: 100%;
-    padding: 20px 60px;
+    padding: 20px 20px;
     background-color: #ffffff;
     border-radius: 7px;
     box-shadow: 0 4px 25px 0 rgba(0,0,0,.1);
@@ -334,9 +324,12 @@ export default {
     }
 
     .cipher-form__inputs {
-      margin-bottom: 95px;
       overflow-y: auto;
       overflow-x: hidden;
+    }
+
+    .modify-form {
+      margin-bottom: 40px;
     }
   }
 </style>

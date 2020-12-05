@@ -6,6 +6,7 @@ import store from './store'
 import vuetify from './plugins/vuetify'
 import Vuetify from 'vuetify'
 import 'font-awesome/css/font-awesome.min.css'
+import './assets/scss/main.scss'
 
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 

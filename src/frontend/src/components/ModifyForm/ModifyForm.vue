@@ -1,15 +1,43 @@
 <template>
-    <div class="modify-form__wrapper">
-      <ModifyDESForm/>
-    </div>
+  <v-expansion-panels>
+    <v-expansion-panel>
+      <v-expansion-panel-header
+        :class="`configuration-expanded-section-header ${isModified
+          ? 'configuration-expanded-section-header--edited-table'
+          : ''
+        }`"
+      >
+        Modify
+      </v-expansion-panel-header>
+      <v-expansion-panel-content>
+        <div class="modify-form__wrapper">
+          <ModifyDESForm
+            @checkForModifications="checkForModifications"
+            :configuration='configuration'
+          />
+        </div>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
+  </v-expansion-panels>
 </template>
 
 <script>
 import ModifyDESForm from './DESModifyForm/DESModifyForm.vue'
 export default {
   name: 'ModifyForm',
+  props: ['configuration'],
   components: {
     ModifyDESForm
+  },
+  data () {
+    return {
+      isModified: false
+    }
+  },
+  methods: {
+    checkForModifications (value) {
+      this.isModified = value
+    }
   }
 }
 </script>
@@ -17,10 +45,6 @@ export default {
 <style lang="scss" scoped>
   .modify-form__wrapper {
     height: 100%;
-    padding: 20px 60px;
-    background-color: #ffffff;
-    border-radius: 7px;
-    box-shadow: 0 4px 25px 0 rgba(0,0,0,.1);
     overflow: auto;
   }
 </style>
