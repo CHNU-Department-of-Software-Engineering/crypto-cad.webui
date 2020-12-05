@@ -2,6 +2,6 @@
 {
     internal interface IRound
     {
-        (short, short) Process(short leftBlock32b, short rightBlock32b, int key48b);
+        (uint, uint) Process(uint leftBlock32b, uint rightBlock32b, ulong key48b);
     }
 }

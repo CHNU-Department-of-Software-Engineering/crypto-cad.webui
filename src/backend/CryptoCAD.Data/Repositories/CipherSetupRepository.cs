@@ -8,7 +8,7 @@ namespace CryptoCAD.Data.Repositories
     {
         public CipherSetupRepository(PostgreSqlContext context) : base(context)
         {
-
+            
         }
     }
 }

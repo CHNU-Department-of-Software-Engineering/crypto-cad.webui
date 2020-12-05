@@ -119,12 +119,11 @@ namespace CryptoCAD.Core.Utilities
             byte index = 0;
             for (byte i = 0; i < data.Length; i += 8)
             {
-                if (index > solidBlocks) break;
-                try
+                if (data.Length - i >= 8)
                 {
                     blocks64b[index] = BitConverter.ToUInt64(data, i);
                 }
-                catch (Exception)
+                else
                 {
                     var b = new byte[8];
                     byte ind = 0;
@@ -133,6 +132,7 @@ namespace CryptoCAD.Core.Utilities
                         b[ind++] = data[j];
                     }
                     blocks64b[index] = BitConverter.ToUInt64(b, 0);
+                    break;
                 }
                 index++;
             }

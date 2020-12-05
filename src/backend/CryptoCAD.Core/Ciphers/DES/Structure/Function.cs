@@ -1,4 +1,5 @@
 ﻿using System;
+using CryptoCAD.Common.CiphersConfiguration;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 
 namespace CryptoCAD.Core.Ciphers.DES.Structure
@@ -18,22 +19,26 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             byte[][] substitutionBoxes
             )
         {
-            if (expansionPermutationTable.Length != Configurations.EXPANSION_PERMUTATION_TABLE_LENGTH)
+            if (expansionPermutationTable.Length != DESConfigurations.EXPANSION_PERMUTATION_TABLE_LENGTH)
             {
                 throw new ArgumentOutOfRangeException(nameof(expansionPermutationTable));
             }
-            if (permutationTable.Length != Configurations.PERMUTATION_TABLE_LENGTH)
+            if (permutationTable.Length != DESConfigurations.PERMUTATION_TABLE_LENGTH)
             {
                 throw new ArgumentOutOfRangeException(nameof(permutationTable));
             }
-            if (substitutionBoxes.Length != Configurations.SUBSTITUTION_BOXES_LENGTH)
+            if (substitutionBoxes.Length != DESConfigurations.SUBSTITUTION_BOXES_LENGTH)
             {
                 throw new ArgumentOutOfRangeException(nameof(substitutionBoxes));
             }
-            if (substitutionBoxes[0].Length != Configurations.SUBSTITUTION_BOX_LENGTH)
+            if (substitutionBoxes[0].Length != DESConfigurations.SUBSTITUTION_BOX_LENGTH)
             {
                 throw new ArgumentOutOfRangeException(nameof(substitutionBoxes));
             }
+
+            ExpansionPermutationTable = expansionPermutationTable;
+            PermutationTable = permutationTable;
+            SubstitutionBoxes = substitutionBoxes;
         }
 
         public uint Process(uint block32b, ulong key48b)

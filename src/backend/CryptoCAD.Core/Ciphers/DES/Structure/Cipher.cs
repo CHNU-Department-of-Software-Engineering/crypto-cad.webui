@@ -36,7 +36,7 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
         {
             var keys = KeySchedule.GenerateSubkeys(key);
 
-            var block64b = 0;
+            ulong block64b = 0;
 
 
             block64b = Permutation(block64b, IP);
@@ -49,9 +49,9 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
 
         }
  
-        private int Permutation(int block64b, byte[] permutationTable)
+        private ulong Permutation(ulong block64b, byte[] permutationTable)
         {
-            var newBlock64b = 0;
+            ulong newBlock64b = 0;
             for (byte i = 0; i < 64; ++i)
             {
                 newBlock64b |= ((block64b >> (64 - permutationTable[i])) & 0x01) << (63 - i);

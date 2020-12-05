@@ -5,14 +5,17 @@ using CryptoCAD.Core.Ciphers.GOST;
 using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
+using CryptoCAD.Core.Factories.Abstractions;
 
 namespace CryptoCAD.Core.Services
 {
     public class CipherService : ICipherService
     {
-        public byte[] Process(string name, CipherOperations operation, byte[] key, byte[] data)
+        private readonly ICipherFactory CipherFactory;
+
+        public byte[] Process(string name, CipherOperations operation, byte[] key, byte[] data, string configuration)
         {
-            var cipher = GetCipher(name);
+            var cipher = GetCipher(name, configuration);
             switch (operation)
             {
                 case CipherOperations.Encrypt:
@@ -24,7 +27,7 @@ namespace CryptoCAD.Core.Services
             }
         }
 
-        private ICipher GetCipher(string name)
+        private ICipher GetCipher(string name, string configuration)
         {
             switch (name)
             {
@@ -35,7 +38,14 @@ namespace CryptoCAD.Core.Services
                 case "gost":
                     return new GOSTCipher();
                 default:
-                    throw new NotImplementedException($"Cipher '{name}' is not supported!");
+                    try
+                    {
+                        return CipherFactory.CreateCipher(configuration);
+                    }
+                    catch (Exception exception)
+                    {
+                        throw new NotImplementedException($"Cipher '{name}' is not supported!", exception);
+                    }
             }
         }
     }

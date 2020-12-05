@@ -14,5 +14,12 @@ namespace CryptoCAD.Core.Tests.Utills
             var bytes = ConvertUtill.FromString(text, mode);
             Assert.AreEqual(text, ConvertUtill.ToString(bytes, mode));
         }
+
+        [TestCase("Some generic text for testing!")]
+        public void ConvertTextToFromDefault(string text)
+        {
+            var bytes = ConvertUtill.FromString(text);
+            Assert.AreEqual(text, ConvertUtill.ToString(bytes));
+        }
     }
 }

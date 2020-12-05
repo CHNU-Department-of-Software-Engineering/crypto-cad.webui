@@ -16,12 +16,12 @@ namespace CryptoCAD.Data.Repositories
             _dbContext = dbContext;
         }
 
-        public T GetById(Guid id)
+        public T Get(Guid id)
         {
             return _dbContext.Set<T>().Find(id);
         }
 
-        public IQueryable<T> GetAll()
+        public IEnumerable<T> GetAll()
         {
             return _dbContext.Set<T>();
         }

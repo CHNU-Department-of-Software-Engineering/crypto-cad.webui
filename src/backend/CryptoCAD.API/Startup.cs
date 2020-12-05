@@ -1,16 +1,14 @@
+using System.IO;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using CryptoCAD.Core.Services;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Data.Repositories;
-using CryptoCAD.Data.EntityFramework;
 using CryptoCAD.Domain.Repositories;
 
 namespace CryptoCAD.API
@@ -86,7 +84,12 @@ namespace CryptoCAD.API
         private void AddServices(IServiceCollection services)
         {
             services.AddTransient<ICipherService, CipherService>();
-            //services.AddTransient<ICipherSetupRepository, CipherSetupRepository>();
+            services.AddSingleton<ICipherEntityRepository>(repository =>
+            {
+                var directory = Directory.GetCurrentDirectory();
+                var path = Path.Combine(directory, Configuration["TemporaryStorage"]);
+                return new TempCipherEntityRepository(path);
+            });
         }
     }
 }

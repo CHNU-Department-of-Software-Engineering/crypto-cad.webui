@@ -4,11 +4,12 @@ using CryptoCAD.Core.Utilities;
 namespace CryptoCAD.Core.Tests.Utills
 {
     [TestFixture]
-    class ByteUtillTests
+    public class ByteUtillTests
     {
 
         [TestCase("Hello World!")]
         [TestCase("Some generic text for testing")]
+        [TestCase("AKLJSNCnqwfn10923r1903rmI(*#&*(!3rhNQc92v2 4v98O&*(#j@fnVOIWE")]
         public void DataConverting(string text)
         {
             var byteText = ConvertUtill.FromString(text, ConvertMode.UTF8);

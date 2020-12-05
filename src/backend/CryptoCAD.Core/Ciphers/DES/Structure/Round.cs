@@ -11,7 +11,7 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             Function = function;
         }
 
-        public (short, short) Process(short leftBlock32b, short rightBlock32b, int key48b)
+        public (uint, uint) Process(uint leftBlock32b, uint rightBlock32b, ulong key48b)
         {
             var newRightBlock32b = Function.Process(rightBlock32b, key48b);
             newRightBlock32b ^= leftBlock32b;

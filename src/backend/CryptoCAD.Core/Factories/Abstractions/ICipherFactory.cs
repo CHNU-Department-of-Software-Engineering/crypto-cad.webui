@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CryptoCAD.Core.Ciphers.Abstractions;
 
 namespace CryptoCAD.Core.Factories.Abstractions
 {
-    public interface ICipherFactory
+    internal interface ICipherFactory
     {
+        ICipher CreateCipher(string configuration);
     }
 }
