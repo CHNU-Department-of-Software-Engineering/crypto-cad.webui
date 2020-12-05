@@ -2,7 +2,7 @@
 
 namespace CryptoCAD.API.Models.Ciphers
 {
-    public class CipherResponse
+    public class CipherProcessResponse
     {
         public Guid Id { get; set; }
         public string Mode { get; set; }
