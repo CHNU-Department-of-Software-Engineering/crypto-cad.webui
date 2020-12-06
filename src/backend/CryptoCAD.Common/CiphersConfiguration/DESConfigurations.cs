@@ -130,11 +130,18 @@ namespace CryptoCAD.Common.CiphersConfiguration
                 InitialPermutationTable = INITIAL_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
                 FinalPermutationTable = FINAL_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
                 ExpansionPermutationTable = EXPANSION_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
-                SubstitutionBoxes = SUBSTITUTION_BOXES.Select(x => x.Select(y => (int)y).ToArray()).ToArray(),
                 PermutationTable = PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
                 Pc1PermutationTable = PC1_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
                 Pc2PermutationTable = PC2_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
-                RotationsTable = ROTATIONS.Select(x => (int)x).ToArray()
+                RotationsTable = ROTATIONS.Select(x => (int)x).ToArray(),
+                SBox1 = SUBSTITUTION_BOXES[0].Select(x => (int)x).ToArray(),
+                SBox2 = SUBSTITUTION_BOXES[1].Select(x => (int)x).ToArray(),
+                SBox3 = SUBSTITUTION_BOXES[2].Select(x => (int)x).ToArray(),
+                SBox4 = SUBSTITUTION_BOXES[3].Select(x => (int)x).ToArray(),
+                SBox5 = SUBSTITUTION_BOXES[4].Select(x => (int)x).ToArray(),
+                SBox6 = SUBSTITUTION_BOXES[5].Select(x => (int)x).ToArray(),
+                SBox7 = SUBSTITUTION_BOXES[6].Select(x => (int)x).ToArray(),
+                SBox8 = SUBSTITUTION_BOXES[7].Select(x => (int)x).ToArray()
             };
         }
     }

@@ -2,24 +2,23 @@
 
 namespace CryptoCAD.Domain.Entities.Ciphers.DES
 {
-    [JsonObject(MemberSerialization.OptIn)]
     public class DESConfiguration
     {
-        [JsonProperty]
         public int[] InitialPermutationTable { get; set; }
-        [JsonProperty]
         public int[] FinalPermutationTable { get; set; }
-        [JsonProperty]
         public int[] ExpansionPermutationTable { get; set; }
-        [JsonProperty]
-        public int[][] SubstitutionBoxes { get; set; }
-        [JsonProperty]
         public int[] PermutationTable { get; set; }
-        [JsonProperty]
         public int[] Pc1PermutationTable { get; set; }
-        [JsonProperty]
         public int[] Pc2PermutationTable { get; set; }
-        [JsonProperty]
         public int[] RotationsTable { get; set; }
+
+        public int[] SBox1 { get; set; }
+        public int[] SBox2 { get; set; }
+        public int[] SBox3 { get; set; }
+        public int[] SBox4 { get; set; }
+        public int[] SBox5 { get; set; }
+        public int[] SBox6 { get; set; }
+        public int[] SBox7 { get; set; }
+        public int[] SBox8 { get; set; }
     }
 }
