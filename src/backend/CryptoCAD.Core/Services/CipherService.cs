@@ -38,7 +38,7 @@ namespace CryptoCAD.Core.Services
 
         private ICipher GetCipher(string name, string configuration)
         {
-            switch (name)
+            switch (name.ToLowerInvariant())
             {
                 case "des_library":
                     return new DESCipher();

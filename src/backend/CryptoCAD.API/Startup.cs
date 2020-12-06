@@ -94,6 +94,7 @@ namespace CryptoCAD.API
             });
             services.AddTransient<IMethodsRepository, MethodsRepository>();
             services.AddTransient<ICipherService, CipherService>();
+            services.AddTransient<IHashService, HashService>();
         }
     }
 }

@@ -17,12 +17,14 @@ namespace CryptoCAD.API.Controllers
     public class MethodsController : ControllerBase
     {
         private readonly ICipherService CipherService;
+        private readonly IHashService HashService;
         private readonly IMethodsRepository MethodsRepository;
         private readonly ILogger<MethodsController> Logger;
 
-        public MethodsController(ICipherService cipherService, IMethodsRepository methodsRepository, ILogger<MethodsController> logger)
+        public MethodsController(ICipherService cipherService, IHashService hashService, IMethodsRepository methodsRepository, ILogger<MethodsController> logger)
         {
             CipherService = cipherService;
+            HashService = hashService;
             MethodsRepository = methodsRepository;
             Logger = logger;
         }
@@ -81,13 +83,25 @@ namespace CryptoCAD.API.Controllers
                         Id = request.Id,
                         Mode = request.Cipher.Mode,
                         Key = request.Cipher.Key,
-                        Data = dataResult,
+                        Data = dataResult.Trim('\0'),
+                        Configurations = request.Configuration
+                    });
+                }
+                else if (type == MethodTypes.Hash)
+                {
+                    var method = MethodsRepository.Get(request.Id);
+                    var result = HashService.Hash(method.Name, request.Data, request.Configuration);
+
+                    return Ok(new CipherProcessResponse()
+                    {
+                        Id = request.Id,
+                        Data = result,
                         Configurations = request.Configuration
                     });
                 }
                 else
                 {
-                    throw new NotImplementedException("Not implemented yet!");
+                    throw new NotSupportedException($"Method type {request.Type} is not supported!");
                 }
             }
             catch (Exception exception)
