@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.Abstractions
 {
     internal interface ICipher : IDisposable

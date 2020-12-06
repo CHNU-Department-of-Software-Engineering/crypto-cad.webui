@@ -1,5 +1,7 @@
 ﻿using System.Security.Cryptography;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.DES
 {
     internal class DESCipher : BaseCipher
