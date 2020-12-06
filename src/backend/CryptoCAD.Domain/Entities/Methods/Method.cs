@@ -6,7 +6,7 @@ namespace CryptoCAD.Domain.Entities.Methods
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
-        public MethodTypes Type { get; set; }
+        public string Type { get; set; }
         public bool IsModifiable { get; set; }
         public bool IsEditable { get; set; }
         public byte SecretLength { get; set; }

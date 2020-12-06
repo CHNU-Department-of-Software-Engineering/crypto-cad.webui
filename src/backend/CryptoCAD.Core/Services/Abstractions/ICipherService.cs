@@ -1,4 +1,4 @@
-﻿using CryptoCAD.Domain.Entities.Methods.Ciphers;
+﻿using CryptoCAD.Domain.Entities.Ciphers;
 
 namespace CryptoCAD.Core.Services.Abstractions
 {

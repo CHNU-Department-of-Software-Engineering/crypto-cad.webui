@@ -1,4 +1,4 @@
-﻿namespace CryptoCAD.Domain.Entities.Methods.Ciphers
+﻿namespace CryptoCAD.Domain.Entities.Ciphers
 {
     public enum CipherModes
     {

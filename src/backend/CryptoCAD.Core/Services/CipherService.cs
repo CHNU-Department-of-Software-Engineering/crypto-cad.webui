@@ -7,7 +7,7 @@ using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Core.Factories.Abstractions;
 using CryptoCAD.Domain.Repositories;
-using CryptoCAD.Domain.Entities.Methods.Ciphers;
+using CryptoCAD.Domain.Entities.Ciphers;
 
 namespace CryptoCAD.Core.Services
 {

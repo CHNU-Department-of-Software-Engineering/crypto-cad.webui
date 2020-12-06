@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace CryptoCAD.Domain.Entities.DES
+namespace CryptoCAD.Domain.Entities.Ciphers.DES
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class DESConfiguration

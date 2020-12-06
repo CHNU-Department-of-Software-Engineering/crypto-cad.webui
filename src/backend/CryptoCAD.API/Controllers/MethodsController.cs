@@ -8,7 +8,7 @@ using CryptoCAD.Domain.Repositories;
 using CryptoCAD.API.Models.Ciphers;
 using CryptoCAD.API.Models.Methods;
 using CryptoCAD.Domain.Entities.Methods;
-using CryptoCAD.Domain.Entities.Methods.Ciphers;
+using CryptoCAD.Domain.Entities.Ciphers;
 
 namespace CryptoCAD.API.Controllers
 {
@@ -106,7 +106,7 @@ namespace CryptoCAD.API.Controllers
                 var method = new Method
                 {
                     Name = request.Name,
-                    Type = request.Type.ToMethodType(),
+                    Type = request.Type,
                     IsModifiable = true,
                     IsEditable = true,
                     SecretLength = request.SecretLength,

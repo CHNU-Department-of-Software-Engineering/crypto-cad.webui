@@ -1,5 +1,6 @@
 ﻿using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
+using CryptoCAD.Domain.Entities.Ciphers;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,7 +33,7 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             throw new NotImplementedException();
         }
 
-        private void Process(bool encrypt, byte[] key, byte[] data)
+        private void Process(byte[] key, byte[] data, CipherModes mode)
         {
             var keys = KeySchedule.GenerateSubkeys(key);
 

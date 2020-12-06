@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using CryptoCAD.Domain.Entities.DES;
+using CryptoCAD.Domain.Entities.Ciphers.DES;
 
 namespace CryptoCAD.Common.CiphersConfiguration
 {
