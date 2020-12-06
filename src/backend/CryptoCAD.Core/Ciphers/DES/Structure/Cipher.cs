@@ -1,10 +1,11 @@
-﻿using CryptoCAD.Core.Ciphers.Abstractions;
-using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
+﻿using System;
+using System.Runtime.CompilerServices;
+using CryptoCAD.Core.Utilities;
 using CryptoCAD.Domain.Entities.Ciphers;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using CryptoCAD.Core.Ciphers.Abstractions;
+using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 
+[assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.DES.Structure
 {
     internal class Cipher : ICipher
@@ -15,39 +16,73 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
         private readonly byte[] IP;
         private readonly byte[] FP;
 
-        public Cipher()
+        public Cipher(IKeySchedule keySchedule, IRound round, byte[] ip, byte[] fp)
         {
-
+            KeySchedule = keySchedule;
+            Round = round;
+            IP = ip;
+            FP = fp;
         }
 
         public byte[] Decrypt(byte[] key, byte[] data)
         {
-            throw new NotImplementedException();
+            return Process(key, data, CipherModes.Encrypt);
         }
         public byte[] Encrypt(byte[] key, byte[] data)
         {
-            throw new NotImplementedException();
+            return Process(key, data, CipherModes.Decrypt);
         }
         public void Dispose()
         {
             throw new NotImplementedException();
         }
 
-        private void Process(byte[] key, byte[] data, CipherModes mode)
+        private byte[] Process(byte[] key, byte[] data, CipherModes mode)
         {
+            if (key.Length != 8)
+            {
+                throw new ArgumentException("Invalid DES key lenght!");
+            }
             var keys = KeySchedule.GenerateSubkeys(key);
+            if (mode == CipherModes.Decrypt)
+            {
+                Array.Reverse(keys);
+            }
 
-            ulong block64b = 0;
+            var blocks64b = ByteUtill.SplitDataToBlocks64b(data);
+            var resultBlocks64b = new ulong[blocks64b.Length];
 
+            for (byte i = 0; i < blocks64b.Length; i++)
+            {
+                resultBlocks64b[i] = Permutation(blocks64b[i], IP);
+                resultBlocks64b[i] = FeistelCipher(resultBlocks64b[i], keys);
+                resultBlocks64b[i] = Permutation(resultBlocks64b[i], FP);
+            }
 
-            block64b = Permutation(block64b, IP);
-
-            block64b = Permutation(block64b, FP);
+            return ByteUtill.JoinBlocks64bToData(resultBlocks64b);
         }
 
-        private void FeistelCipher(bool encrypt)
+        private ulong FeistelCipher(ulong block64b, ulong[] keys)
         {
+            uint N1 = (uint)(block64b & 0xFFFFFFFF), N2 = (uint)((block64b >> 32) & 0xFFFFFFFF);
+            for (byte i = 0; i < keys.Length; i++)
+            {
+                var res = Round.Process(N1, N2, keys[i]);
+                N1 = res.Item1;
+                N2 = res.Item2;
+            }
 
+            var output = new byte[8];
+            var N1buff = BitConverter.GetBytes(N1);
+            var N2buff = BitConverter.GetBytes(N2);
+
+            for (byte i = 0; i < 4; i++)
+            {
+                output[i] = N1buff[i];
+                output[4 + i] = N2buff[i];
+            }
+
+            return BitConverter.ToUInt64(output, 0);
         }
  
         private ulong Permutation(ulong block64b, byte[] permutationTable)

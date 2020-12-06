@@ -1,5 +1,7 @@
-﻿using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
+﻿using System.Runtime.CompilerServices;
+using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 
+[assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.DES.Structure
 {
     internal class Round : IRound

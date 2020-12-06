@@ -1,9 +1,9 @@
 ﻿using System;
 using CryptoCAD.Core.Ciphers.AES;
 using CryptoCAD.Core.Ciphers.DES;
+using CryptoCAD.Core.Ciphers.DES.Factory;
 using CryptoCAD.Core.Ciphers.GOST;
 using CryptoCAD.Core.Ciphers.Abstractions;
-using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Core.Factories.Abstractions;
 using CryptoCAD.Domain.Repositories;
@@ -19,6 +19,7 @@ namespace CryptoCAD.Core.Services
         public CipherService(IMethodsRepository methodsRepository)
         {
             MethodsRepository = methodsRepository;
+            CipherFactory = new DESCipherFactory();
         }
 
         public byte[] Process(string name, CipherModes mode, byte[] key, byte[] data, string configuration)

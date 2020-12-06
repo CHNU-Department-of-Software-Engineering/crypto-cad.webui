@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using CryptoCAD.Common.CiphersConfiguration;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 
+[assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.DES.Structure
 {
     internal class KeySchedule : IKeySchedule
