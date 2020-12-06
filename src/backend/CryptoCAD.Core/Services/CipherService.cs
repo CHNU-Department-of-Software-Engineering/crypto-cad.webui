@@ -6,21 +6,29 @@ using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Models.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Core.Factories.Abstractions;
+using CryptoCAD.Domain.Repositories;
+using CryptoCAD.Domain.Entities.Methods.Ciphers;
 
 namespace CryptoCAD.Core.Services
 {
     public class CipherService : ICipherService
     {
         private readonly ICipherFactory CipherFactory;
+        private readonly IMethodsRepository MethodsRepository;
 
-        public byte[] Process(string name, CipherOperations operation, byte[] key, byte[] data, string configuration)
+        public CipherService(IMethodsRepository methodsRepository)
+        {
+            MethodsRepository = methodsRepository;
+        }
+
+        public byte[] Process(string name, CipherModes mode, byte[] key, byte[] data, string configuration)
         {
             var cipher = GetCipher(name, configuration);
-            switch (operation)
+            switch (mode)
             {
-                case CipherOperations.Encrypt:
+                case CipherModes.Encrypt:
                     return cipher.Encrypt(key, data);
-                case CipherOperations.Decrypt:
+                case CipherModes.Decrypt:
                     return cipher.Decrypt(key, data);
                 default:
                     throw new NotImplementedException("Cipher operation is not supported!");
@@ -31,7 +39,7 @@ namespace CryptoCAD.Core.Services
         {
             switch (name)
             {
-                case "des":
+                case "des_library":
                     return new DESCipher();
                 case "aes":
                     return new AESCipher();

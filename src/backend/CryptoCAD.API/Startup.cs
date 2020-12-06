@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using CryptoCAD.Data.Storage;
+using CryptoCAD.Data.Storage.Abstractions;
+using CryptoCAD.Data.Repositories;
 using CryptoCAD.Core.Services;
 using CryptoCAD.Core.Services.Abstractions;
-using CryptoCAD.Data.Repositories;
 using CryptoCAD.Domain.Repositories;
 
 namespace CryptoCAD.API
@@ -83,13 +85,15 @@ namespace CryptoCAD.API
 
         private void AddServices(IServiceCollection services)
         {
-            services.AddTransient<ICipherService, CipherService>();
-            services.AddSingleton<ICipherEntityRepository>(repository =>
+            services.AddSingleton<IStorageContext>(context =>
             {
-                var directory = Directory.GetCurrentDirectory();
-                var path = Path.Combine(directory, Configuration["TemporaryStorage"]);
-                return new TempCipherEntityRepository(path);
+                var path = Path.Combine(Directory.GetCurrentDirectory(), Configuration["Storage:File"]);
+                var dropCreate = Configuration["Storage:DropCreate"].ToLower() == "true";
+
+                return new StorageContext(path, dropCreate);
             });
+            services.AddTransient<IMethodsRepository, MethodsRepository>();
+            services.AddTransient<ICipherService, CipherService>();
         }
     }
 }

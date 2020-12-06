@@ -1,5 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
+using CryptoCAD.Domain.Entities.Methods;
 
 namespace CryptoCAD.Domain.Entities
 {
@@ -11,7 +12,7 @@ namespace CryptoCAD.Domain.Entities
         [JsonProperty]
         public string Name { get; set; }
         [JsonProperty]
-        public CipherTypes Type { get; set; }
+        public MethodTypes Type { get; set; }
         [JsonProperty]
         public bool IsModifiable { get; set; }
         [JsonProperty]

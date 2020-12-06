@@ -1,4 +1,7 @@
-﻿namespace CryptoCAD.Common.CiphersConfiguration
+﻿using System.Linq;
+using CryptoCAD.Domain.Entities.DES;
+
+namespace CryptoCAD.Common.CiphersConfiguration
 {
     public static class DESConfigurations
     {
@@ -119,5 +122,20 @@
         public static readonly byte[] ROTATIONS = new byte[ROTATIONS_TABLE_LENGTH] {
             1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
         };
+
+        public static DESConfiguration GetConfiguration()
+        {
+            return new DESConfiguration
+            {
+                InitialPermutationTable = INITIAL_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
+                FinalPermutationTable = FINAL_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
+                ExpansionPermutationTable = EXPANSION_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
+                SubstitutionBoxes = SUBSTITUTION_BOXES.Select(x => x.Select(y => (int)y).ToArray()).ToArray(),
+                PermutationTable = PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
+                Pc1PermutationTable = PC1_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
+                Pc2PermutationTable = PC2_PERMUTATION_TABLE.Select(x => (int)x).ToArray(),
+                RotationsTable = ROTATIONS.Select(x => (int)x).ToArray()
+            };
+        }
     }
 }
