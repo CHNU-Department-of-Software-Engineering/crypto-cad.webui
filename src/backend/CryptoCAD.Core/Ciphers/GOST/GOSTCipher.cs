@@ -1,8 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using CryptoCAD.Core.Ciphers.Abstractions;
+using System.Runtime.CompilerServices;
+using CryptoCAD.Core.Utilities;
 
+[assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.GOST
 {
     internal class GOSTCipher : ICipher
@@ -22,6 +24,9 @@ namespace CryptoCAD.Core.Ciphers.GOST
 
         public byte[] Decrypt(byte[] key, byte[] data)
         {
+            var blocks64b = ByteUtill.SplitDataToBlocks64b(data);
+            var decryptedBlocks64b = new ulong[blocks64b.Length];
+
             var subkeys = GenerateKeys(key);
             var result = new byte[data.Length];
             var block = new byte[8];
@@ -32,23 +37,27 @@ namespace CryptoCAD.Core.Ciphers.GOST
             {
                 Parallel.For(0, data.Length / 8, i =>
                 {
-                    Array.Copy(data, 8 * i, block, 0, 8);
-                    Array.Copy(DecryptBlock(block, subkeys), 0, result, 8 * i, 8);
+                    //Array.Copy(data, 8 * i, block, 0, 8);
+                    //Array.Copy(DecryptBlock(block, subkeys), 0, result, 8 * i, 8);
                 });
             }
             else
             {
-                for (int i = 0; i < data.Length / 8; i++) // N blocks 64bits length.
+                for (int i = 0; i < blocks64b.Length; i++) // N blocks 64bits length.
                 {
-                    Array.Copy(data, 8 * i, block, 0, 8);
-                    Array.Copy(DecryptBlock(block, subkeys), 0, result, 8 * i, 8);
+                    decryptedBlocks64b[i] = DecryptBlock(blocks64b[i], subkeys);
+                    //Array.Copy(data, 8 * i, block, 0, 8);
+                    //Array.Copy(DecryptBlock(block, subkeys), 0, result, 8 * i, 8);
                 }
             }
-            return result;
+            return ByteUtill.JoinBlocks64bToData(decryptedBlocks64b);
         }
 
         public byte[] Encrypt(byte[] key, byte[] data)
         {
+            var blocks64b = ByteUtill.SplitDataToBlocks64b(data);
+            var encryptedBlocks64b = new ulong[blocks64b.Length];
+
             var subkeys = GenerateKeys(key);
             var result = new byte[data.Length];
             var block = new byte[8];
@@ -59,19 +68,20 @@ namespace CryptoCAD.Core.Ciphers.GOST
             {
                 Parallel.For(0, data.Length / 8, i =>
                 {
-                    Array.Copy(data, 8 * i, block, 0, 8);
-                    Array.Copy(EncryptBlock(block, subkeys), 0, result, 8 * i, 8);
+                    //Array.Copy(data, 8 * i, block, 0, 8);
+                    //Array.Copy(EncryptBlock(block, subkeys), 0, result, 8 * i, 8);
                 });
             }
             else
             {
-                for (int i = 0; i < data.Length / 8; i++) // N blocks 64bits length.
+                for (int i = 0; i < blocks64b.Length; i++) // N blocks 64bits length.
                 {
-                    Array.Copy(data, 8 * i, block, 0, 8);
-                    Array.Copy(EncryptBlock(block, subkeys), 0, result, 8 * i, 8);
+                    encryptedBlocks64b[i] = EncryptBlock(blocks64b[i], subkeys);
+                    //Array.Copy(data, 8 * i, block, 0, 8);
+                    //Array.Copy(EncryptBlock(block, subkeys), 0, result, 8 * i, 8);
                 }
             }
-            return result;
+            return ByteUtill.JoinBlocks64bToData(encryptedBlocks64b);
         }
 
         public void Dispose()
@@ -79,10 +89,9 @@ namespace CryptoCAD.Core.Ciphers.GOST
 
         }
 
-        private byte[] DecryptBlock(byte[] block, uint[] keys)
+        private ulong DecryptBlock(ulong block64b, uint[] keys)
         {
-            uint N1 = BitConverter.ToUInt32(block, 0);
-            uint N2 = BitConverter.ToUInt32(block, 4);
+            uint N1 = (uint)(block64b & 0xFFFFFFFF), N2 = (uint)((block64b >> 32) & 0xFFFFFFFF);
 
             for (byte i = 0; i < 32; i++)
             {
@@ -106,26 +115,25 @@ namespace CryptoCAD.Core.Ciphers.GOST
             var N1buff = BitConverter.GetBytes(N1);
             var N2buff = BitConverter.GetBytes(N2);
 
-            for (int i = 0; i < 4; i++)
+            for (byte i = 0; i < 4; i++)
             {
                 output[i] = N1buff[i];
                 output[4 + i] = N2buff[i];
             }
 
-            return output;
+            return BitConverter.ToUInt64(output, 0);
         }
-        private byte[] EncryptBlock(byte[] block, uint[] keys)
+        private ulong EncryptBlock(ulong block64b, uint[] keys)
         {
-            uint N1 = BitConverter.ToUInt32(block, 0);
-            uint N2 = BitConverter.ToUInt32(block, 4);
+            uint N1 = (uint)(block64b & 0xFFFFFFFF), N2 = (uint)((block64b >> 32) & 0xFFFFFFFF);
 
-            for (int i = 0; i < 32; i++)
+            for (byte i = 0; i < 32; i++)
             {
-                int keyIndex = i < 24 ? (i % 8) : (7 - i % 8); // to 24th cycle : 0 to 7; after - 7 to 0;
+                var keyIndex = i < 24 ? (i % 8) : (7 - i % 8); // to 24th cycle : 0 to 7; after - 7 to 0;
                 var s = (N1 + keys[keyIndex]) % uint.MaxValue; // (N1 + X[i]) mod 2^32
                 s = Substitution(s); // substitute from box
                 s = (s << 11) | (s >> 21);
-                s = s ^ N2; // ( s + N2 ) mod 2
+                s ^= N2; // ( s + N2 ) mod 2
                 //N2 = N1;
                 //N1 = s;
                 if (i < 31) // last cycle : N1 don't change; N2 = s;
@@ -149,7 +157,7 @@ namespace CryptoCAD.Core.Ciphers.GOST
                 output[4 + i] = N2buff[i];
             }
 
-            return output;
+            return BitConverter.ToUInt64(output, 0);
         }
 
         private uint[] GenerateKeys(byte[] key)
