@@ -1,15 +1,12 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header
-      :class="`configuration-expanded-section-header ${isPermutedChoiceTablesEdited
-        ? 'configuration-expanded-section-header--edited-table'
-        : ''
-      }`"
+      :class="`expanded-section-header ${isPermutedChoiceTablesEdited ? 'expanded-section-header--edited' : ''}`"
     >
       <span>Permuted Choice Tables</span>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <div class="des-permuted-choice-tables__container">
+      <div class="permuted-choice-tables__container">
         <v-expansion-panels multiple>
           <PermutationTable
             @checkForTableEdit="onFirstPermutedChoiceTableEdit"
@@ -64,6 +61,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-</style>

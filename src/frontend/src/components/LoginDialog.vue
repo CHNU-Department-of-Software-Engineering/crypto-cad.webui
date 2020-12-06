@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="login-dialog__wrapper">
     <v-dialog
       v-model="dialog"
       ripple
@@ -12,7 +12,7 @@
       </template>
 
       <v-card>
-        <div class="login-dialog__wrapper">
+        <div class="login-dialog__container">
           <h3 class="login-dialog__title">{{ isSignInView ? 'Sign In' : 'Sign Up'}}</h3>
           <span v-if="isSignInView">Welcome back, please sign in to your account.</span>
           <span v-else>Welcome, please create your account.</span>
@@ -66,6 +66,12 @@
             </v-form>
           </div>
         </div>
+        <v-overlay :value="loading">
+          <v-progress-circular
+            indeterminate
+            size="64"
+          ></v-progress-circular>
+        </v-overlay>
       </v-card>
     </v-dialog>
     <v-snackbar
@@ -92,7 +98,6 @@ export default {
         color: null
       },
       isSignInView: true,
-      isSuccessful: false,
       isFormValid: true,
       user: new User('', ''),
       loading: false,
@@ -124,7 +129,6 @@ export default {
             this.snackbar.message = data.message
             this.snackbar.show = true
             this.snackbar.color = 'green'
-            this.isSuccessful = true
             this.dialog = false
           },
           error => {
@@ -134,8 +138,6 @@ export default {
               error.toString()
             this.snackbar.show = true
             this.snackbar.color = 'red'
-            this.isSuccessful = false
-            console.log('this.isSuccessful', this.isSuccessful)
           }
         )
       }
@@ -147,7 +149,6 @@ export default {
             this.snackbar.message = data.message
             this.snackbar.color = 'green'
             this.snackbar.show = true
-            this.isSuccessful = true
             this.isSignInView = true
           },
           error => {
@@ -157,7 +158,6 @@ export default {
               error.toString()
             this.snackbar.color = 'red'
             this.snackbar.show = true
-            this.isSuccessful = false
           }
         )
       }
@@ -168,7 +168,6 @@ export default {
           this.snackbar.message = data
           this.snackbar.color = 'red'
           this.snackbar.show = true
-          this.isSuccessful = true
         }
       )
     },
@@ -179,8 +178,8 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
-  .login-dialog__wrapper {
+<style lang="scss" scoped>
+  .login-dialog__container {
     padding: 30px;
 
     .login-dialog__title {

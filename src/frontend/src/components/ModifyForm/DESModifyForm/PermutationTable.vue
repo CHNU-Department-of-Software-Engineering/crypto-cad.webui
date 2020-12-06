@@ -1,10 +1,7 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header
-      :class="`configuration-expanded-section-header ${isTableEdited
-        ? 'configuration-expanded-section-header--edited-table'
-        : ''
-      }`"
+      :class="`expanded-section-header ${isTableEdited ? 'expanded-section-header--edited' : ''}`"
     >
       <span>{{ title }}</span>
     </v-expansion-panel-header>
@@ -24,7 +21,15 @@
             </tr>
           </table>
           <div class="permutation-table__footer-buttons">
-            <button class="permutation-table__default-values-button" @click.prevent="populateDefaultValues">Default Values</button>
+            <v-btn
+              class="permutation-table__default-values-button"
+              width="175"
+              color="primary"
+              outlined
+              @click.prevent="populateDefaultValues"
+            >
+              Default Values
+            </v-btn>
           </div>
         </div>
       </div>
@@ -96,7 +101,7 @@ export default {
       }
 
       .permutation-table__footer-buttons {
-        margin: 10px 10px 0 10px;
+        margin: 10px 0 0 10px;
         display: flex;
         justify-content: flex-end;
 

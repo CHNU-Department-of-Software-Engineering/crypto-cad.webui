@@ -1,15 +1,12 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header
-      :class="`configuration-expanded-section-header ${isRoundTablesEdited
-        ? 'configuration-expanded-section-header--edited-table'
-        : ''
-      }`"
+      :class="`expanded-section-header ${isRoundTablesEdited ? 'expanded-section-header--edited' : ''}`"
     >
       <span>Round Tables</span>
     </v-expansion-panel-header>
     <v-expansion-panel-content>
-      <div class="des-round-tables__container">
+      <div class="round-tables__container">
         <v-expansion-panels multiple>
           <PermutationTable
             @checkForTableEdit="onExpansionPermutationTableEdit"
@@ -18,7 +15,9 @@
             title="Expansion Permutation Table"
           ></PermutationTable>
           <v-expansion-panel>
-            <v-expansion-panel-header :class="`section-header ${isSubstitutionBoxTableEdited ? 'section-header--edited-table': ''}`">
+            <v-expansion-panel-header
+              :class="`expanded-section-header ${isSubstitutionBoxTableEdited ? 'expanded-section-header--edited' : ''}`"
+            >
               <span>Substitution Boxes</span>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
@@ -90,6 +89,3 @@ export default {
   }
 }
 </script>
-
-<style scoped lang="scss">
-</style>

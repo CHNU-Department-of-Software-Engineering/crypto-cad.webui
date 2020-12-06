@@ -1,5 +1,5 @@
 <template>
-  <div class="des-container">
+  <div class="des-modify-form__wrapper">
     <v-expansion-panels multiple>
       <PermutationTable
         @checkForTableEdit="onInitialPermutationTableEdit"
@@ -88,15 +88,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .des-container {
+  .des-modify-form__wrapper {
     display: flex;
     justify-content: center;
-  }
-  h2 {
-    margin-bottom: 50px;
-  }
-
-  .table-header {
-    margin-bottom: 10px;
   }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="add-new-page-wrapper">
-   Add New
+   Add New Method
   </div>
 </template>
 

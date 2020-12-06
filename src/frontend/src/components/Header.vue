@@ -1,9 +1,7 @@
 <template>
-  <div class="header-wrapper">
-    <h3>CryptoCAD</h3>
-    <div>
-      <LoginDialog/>
-    </div>
+  <div class="main-header__wrapper">
+    <h3 class="main-header__login" @click="$router.push('/settings')">CryptoCAD</h3>
+    <LoginDialog/>
   </div>
 </template>
 
@@ -18,13 +16,17 @@ export default {
 }
 </script>
 
-<style scoped>
-.header-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 60px;
-  padding: 10px 30px;
-  background-color: #fff;
-}
+<style lang="scss" scoped>
+  .main-header__wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 10px 30px;
+    background-color: #fff;
+
+    .main-header__login {
+      cursor: pointer;
+    }
+  }
 </style>
