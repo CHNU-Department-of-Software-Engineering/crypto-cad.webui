@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using System.Runtime.CompilerServices;
-using CryptoCAD.Core.Utilities;
+using CryptoCAD.Common.Helpers;
 using CryptoCAD.Core.Hashers.Abstractions;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
@@ -10,7 +10,7 @@ namespace CryptoCAD.Core.Hashers.MD5
     {
         public string Hash(string data)
         {
-            var bytes = ConvertUtill.FromString(data);
+            var bytes = data.ToBytes();
 
             var md5 = System.Security.Cryptography.MD5.Create();
             var hash = md5.ComputeHash(bytes);

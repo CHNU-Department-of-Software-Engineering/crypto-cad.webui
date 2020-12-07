@@ -1,6 +1,6 @@
-﻿using CryptoCAD.Core.Ciphers.DES.Factory;
-using CryptoCAD.Core.Utilities;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using CryptoCAD.Common.Helpers;
+using CryptoCAD.Core.Ciphers.DES.Factory;
 
 namespace CryptoCAD.Core.Tests.Ciphers.DES
 {
@@ -15,14 +15,14 @@ namespace CryptoCAD.Core.Tests.Ciphers.DES
             var factory = new DESCipherFactory();
             var cipher = factory.CreateCipher(Configuration);
 
-            var keyBytes = ConvertUtill.FromString(key);
-            var dataBytes = ConvertUtill.FromString(data);
+            var keyBytes = key.ToBytes();
+            var dataBytes = data.ToBytes();
 
             try
             {
                 var encypted = cipher.Encrypt(keyBytes, dataBytes);
                 var decrypted = cipher.Decrypt(keyBytes, encypted);
-                var actual = ConvertUtill.ToString(decrypted).Trim('\0');
+                var actual = decrypted.ToString(ConvertMode.UTF8).Trim('\0');
 
                 Assert.AreEqual(data, actual);
             }

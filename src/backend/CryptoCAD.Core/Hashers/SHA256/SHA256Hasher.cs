@@ -1,7 +1,7 @@
 ﻿using CryptoCAD.Core.Hashers.Abstractions;
 using System.Text;
 using System.Runtime.CompilerServices;
-using CryptoCAD.Core.Utilities;
+using CryptoCAD.Common.Helpers;
 using System.Security.Cryptography;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
@@ -11,7 +11,7 @@ namespace CryptoCAD.Core.Hashers.SHA256
     {
         public string Hash(string data)
         {
-			var bytes = ConvertUtill.FromString(data);
+			var bytes = data.ToBytes();
 
 			var shaM = new SHA256Managed();
 			var hash = shaM.ComputeHash(bytes);

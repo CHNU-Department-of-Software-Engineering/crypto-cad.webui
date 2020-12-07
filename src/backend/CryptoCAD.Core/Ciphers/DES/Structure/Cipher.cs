@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using CryptoCAD.Common.Helpers;
 using CryptoCAD.Core.Utilities;
-using CryptoCAD.Domain.Entities.Ciphers;
 using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
+using CryptoCAD.Domain.Entities.Ciphers;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.DES.Structure
@@ -49,7 +50,7 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
                 Array.Reverse(keys);
             }
 
-            var blocks64b = ByteUtill.SplitDataToBlocks64b(data);
+            var blocks64b = data.ToUInts64();
             var resultBlocks64b = new ulong[blocks64b.Length];
 
             for (byte i = 0; i < blocks64b.Length; i++)
@@ -59,7 +60,7 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
                 resultBlocks64b[i] = Permutation(resultBlocks64b[i], FP);
             }
 
-            return ByteUtill.JoinBlocks64bToData(resultBlocks64b);
+            return resultBlocks64b.ToBytes();
         }
 
         private ulong FeistelCipher(ulong block64b, ulong[] keys)

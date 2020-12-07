@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using CryptoCAD.Core.Utilities;
-using CryptoCAD.Core.Services.Abstractions;
+using CryptoCAD.Common.Helpers;
 using CryptoCAD.API.Models.Ciphers;
 using CryptoCAD.API.Models.Methods;
 using CryptoCAD.Domain.Repositories;
 using CryptoCAD.Domain.Entities.Methods;
 using CryptoCAD.Domain.Entities.Ciphers;
+using CryptoCAD.Core.Services.Abstractions;
 
 namespace CryptoCAD.API.Controllers
 {
@@ -69,14 +69,14 @@ namespace CryptoCAD.API.Controllers
                         throw new NotSupportedException("Only 'encryption' and 'decryption' modes are supported!");
                     }
 
-                    var key = ConvertUtill.FromString(request.Cipher.Key);
-                    var data = ConvertUtill.FromString(request.Data, mode == CipherModes.Decrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
+                    var key = request.Cipher.Key.ToBytes();
+                    var data = request.Data.ToBytes(mode == CipherModes.Decrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
 
                     var method = MethodsRepository.Get(request.Id);
 
                     var result = CipherService.Process(method.Name, mode, key, data, request.Configuration);
 
-                    var dataResult = ConvertUtill.ToString(result, mode == CipherModes.Encrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
+                    var dataResult = result.ToString(mode == CipherModes.Encrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
 
                     return Ok(new CipherProcessResponse()
                     {
