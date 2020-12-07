@@ -1,9 +1,11 @@
 ﻿using System;
 using CryptoCAD.Domain.Repositories;
 using CryptoCAD.Core.Hashers.SHA256;
+using CryptoCAD.Core.Hashers.SHA512;
 using CryptoCAD.Core.Hashers.Abstractions;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Core.Factories.Abstractions;
+using CryptoCAD.Core.Hashers.MD5;
 
 namespace CryptoCAD.Core.Services
 {
@@ -29,6 +31,10 @@ namespace CryptoCAD.Core.Services
             {
                 case "sha256":
                     return new SHA256Hasher();
+                case "sha512":
+                    return new SHA512Hasher();
+                case "md5":
+                    return new MD5Hasher();
                 default:
                     try
                     {

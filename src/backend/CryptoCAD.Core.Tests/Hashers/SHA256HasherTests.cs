@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using CryptoCAD.Core.Hashers.SHA256;
 using CryptoCAD.Core.Hashers.Abstractions;
-using CryptoCAD.Core.Utilities;
 
 namespace CryptoCAD.Core.Tests.Hashers
 {

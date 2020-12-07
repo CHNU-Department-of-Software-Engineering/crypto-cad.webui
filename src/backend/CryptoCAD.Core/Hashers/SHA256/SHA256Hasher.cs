@@ -2,6 +2,7 @@
 using System.Text;
 using System.Runtime.CompilerServices;
 using CryptoCAD.Core.Utilities;
+using System.Security.Cryptography;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Hashers.SHA256
@@ -10,7 +11,20 @@ namespace CryptoCAD.Core.Hashers.SHA256
     {
         public string Hash(string data)
         {
-			return SHA256(data);
+			var bytes = ConvertUtill.FromString(data);
+
+			var shaM = new SHA256Managed();
+			var hash = shaM.ComputeHash(bytes);
+
+			var hashStr = new StringBuilder();
+			for (int i = 0; i < 32; i++)
+			{
+				hashStr.Append(string.Format("{0:X2}", hash[i]));
+			}
+
+			return hashStr.ToString();
+
+			//return SHA256(data);
         }
 
 		static void DBL_INT_ADD(ref uint a, ref uint b, uint c)

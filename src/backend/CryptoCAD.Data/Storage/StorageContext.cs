@@ -89,6 +89,24 @@ namespace CryptoCAD.Data.Storage
                     IsModifiable = false,
                     IsEditable = false,
                     Configuration = string.Empty
+                },
+                new Method
+                {
+                    Id = new Guid("c3ba717f-42be-4f68-a11c-dd67ec0423c2"),
+                    Name = "SHA512",
+                    Type = MethodTypes.Hash.ToFriendlyString(),
+                    IsModifiable = false,
+                    IsEditable = false,
+                    Configuration = string.Empty
+                },
+                new Method
+                {
+                    Id = new Guid("612e8668-fdf5-494d-8982-47468fa539de"),
+                    Name = "MD5",
+                    Type = MethodTypes.Hash.ToFriendlyString(),
+                    IsModifiable = false,
+                    IsEditable = false,
+                    Configuration = string.Empty
                 }
             };
         }
