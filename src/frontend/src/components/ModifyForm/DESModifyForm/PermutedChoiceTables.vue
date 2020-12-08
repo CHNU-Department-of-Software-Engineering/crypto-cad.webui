@@ -9,16 +9,18 @@
       <div class="permuted-choice-tables__container">
         <v-expansion-panels multiple>
           <PermutationTable
-            @checkForTableEdit="onFirstPermutedChoiceTableEdit"
-            :table-data="configuration['Pc1PermutationTable']"
+            :configuration="configuration['Pc1PermutationTable']"
+            :default-configuration="defaultConfiguration['Pc1PermutationTable']"
             :columns-number="8"
             title="Permuted Choice Table #1"
+            configuration-name="Pc1PermutationTable"
           ></PermutationTable>
           <PermutationTable
-            @checkForTableEdit="onSecondPermutedChoiceTableEdit"
-            :table-data="configuration['Pc2PermutationTable']"
+            :configuration="configuration['Pc2PermutationTable']"
+            :default-configuration="defaultConfiguration['Pc2PermutationTable']"
             :columns-number="8"
             title="Permuted Choice Table #2"
+            configuration-name="Pc2PermutationTable"
           ></PermutationTable>
         </v-expansion-panels>
       </div>
@@ -31,32 +33,13 @@ import PermutationTable from './PermutationTable'
 
 export default {
   name: 'PermutedChoiceTables',
-  props: ['configuration'],
+  props: ['configuration', 'defaultConfiguration'],
   components: {
     PermutationTable
   },
-  data () {
-    return {
-      isFirstPermutedTableEdited: false,
-      isSecondPermutedTableEdited: false
-    }
-  },
-  methods: {
-    onFirstPermutedChoiceTableEdit (value) {
-      this.isFirstPermutedTableEdited = value
-      this.checkForTableEdit()
-    },
-    onSecondPermutedChoiceTableEdit (value) {
-      this.isSecondPermutedTableEdited = value
-      this.checkForTableEdit()
-    },
-    checkForTableEdit () {
-      this.$emit('checkForTableEdit', this.isPermutedChoiceTablesEdited)
-    }
-  },
   computed: {
     isPermutedChoiceTablesEdited () {
-      return this.isFirstPermutedTableEdited || this.isSecondPermutedTableEdited
+      return this.configuration.Pc1PermutationTable.edited || this.configuration.Pc2PermutationTable.edited
     }
   }
 }

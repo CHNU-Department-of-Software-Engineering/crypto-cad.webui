@@ -23,11 +23,11 @@
         </div>
       </div>
       <div class="settings-form__content">
-        <v-form v-model="isFormValid">
+        <v-form v-model="isFormValid" ref="settingsForm">
           <v-row>
             <v-col cols="4">
               <v-select
-                v-model="selectedCipherId"
+                @change="selectMethod"
                 :items="formattedMethods"
                 :rules="[inputRules.required]"
                 label="Select Method"
@@ -35,33 +35,39 @@
                 required
               ></v-select>
             </v-col>
-            <v-col offset="4" cols="4">
+            <v-col v-if="showOperationSelector" offset="4" cols="4">
               <v-select
-                v-model="selectedOperation"
-                :items="cipherOperations"
+                @change="selectOperation"
+                :items="operations"
+                :rules="[inputRules.required]"
                 label="Select Operation"
                 outlined
+                required
               ></v-select>
             </v-col>
           </v-row>
-          <v-row>
+          <v-row v-if="selectedMethod">
             <v-col class="settings-form__content-item" cols="12">
               <v-text-field
-                v-model="publicKeyInput"
-                :label="'Key'"
-                :rules="[
-                inputRules.required,
-                (value) => inputRules.maxLength(value, selectedCipher.key.lenght),
-                (value) => inputRules.minLength(value, selectedCipher.key.lenght)
-              ]"
-                required
-                solo
+                @change="changeSecretKey"
+                :value="secretKey"
+                :label="keyInputLabel"
+                :rules="keyInputRequired
+                  ? [
+                    inputRules.required,
+                    (value) => inputRules.maxLength(value, selectedMethod.secretLength),
+                    (value) => inputRules.minLength(value, selectedMethod.secretLength)
+                  ]
+                  : []
+                "
+                :required="keyInputRequired"
+                outlined
               ></v-text-field>
             </v-col>
           </v-row>
-          <v-row v-if="selectedCipher">
+          <v-row v-if="Object.values(currentConfiguration).length">
             <v-col class="settings-form__content-item" cols="12">
-              <ModifyForm :configuration="JSON.parse(selectedCipher.configuration)"></ModifyForm>
+              <ModifyForm :defaultConfiguration="selectedMethod.configuration ? JSON.parse(selectedMethod.configuration) : {}"></ModifyForm>
             </v-col>
           </v-row>
         </v-form>
@@ -71,7 +77,7 @@
       <FileDropzone ref="fileDropzone"></FileDropzone>
       <div class="settings-form__submit-button">
         <v-btn :disabled="!isFormValid" outlined width="400px" color="success" @click="onSubmitForm">
-          {{ selectedOperation === 'encryption' ? 'Encrypt' : 'Decrypt' }}
+          {{ submitButtonLabel }}
         </v-btn>
       </div>
     </div>
@@ -80,11 +86,12 @@
 
 <script>
 import axios from 'axios'
+import _ from 'lodash'
 import moment from 'moment'
 import fileSaver from 'file-saver'
 import ModifyForm from '../ModifyForm/ModifyForm'
 import FileDropzone from './FileDropzone'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState, mapMutations } from 'vuex'
 
 export default {
   name: 'SettingsForm',
@@ -99,21 +106,8 @@ export default {
     return {
       isFormValid: true,
       showTitle: true,
-      ciphers: [],
-      selectedCipherId: '',
       isEncrypt: true,
       fileText: '',
-      cipherOperations: [
-        {
-          value: 'encryption',
-          text: 'Encryption'
-        },
-        {
-          value: 'decryption',
-          text: 'Decryption'
-        }
-      ],
-      selectedOperation: 'encryption',
       publicKeyInput: '',
       inputRules: {
         required: value => !!value || 'Required',
@@ -123,15 +117,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions('method', ['getMethods']),
+    ...mapActions('method', ['getMethods', 'processMethod']),
+    ...mapMutations('method', ['selectMethod', 'selectOperation', 'changeSecretKey']),
     onSubmitForm () {
-      axios.post('https://localhost:5001/api/ciphers/process', {
-        data: this.fileText.trim(),
-        name: this.selectedCipher.name,
-        id: this.selectedCipher.id,
-        mode: this.selectedOperation,
-        key: this.publicKeyInput.trim()
-      }).then((data) => {
+      this.processMethod().then((data) => {
+        console.log('data component', data)
         this.$refs.fileDropzone.removeAllFiles()
         this.downloadFile(data.data.data)
       }).catch((e) => {
@@ -147,18 +137,102 @@ export default {
     }
   },
   computed: {
-    ...mapState('method', ['methods']),
+    ...mapState(
+      'method',
+      ['methods', 'selectedMethodId', 'currentConfiguration', 'operations', 'selectedOperationId', 'secretKey']
+    ),
     isSignedIn () {
       return this.$store.state.auth.status.signedIn
     },
     formattedMethods () {
-      return this.methods.map(method => ({
+      const formattedMethods = this.methods.map(method => ({
         text: method.name,
-        value: method.id
+        value: method.id,
+        type: method.type
       }))
+      const groupedMethods = _.groupBy(formattedMethods, 'type')
+
+      return Object.keys(groupedMethods).reduce((formattedMethods, methodType) => {
+        return [
+          ...formattedMethods,
+          {
+            divider: true
+          },
+          {
+            header: _.startCase(methodType)
+          },
+          {
+            divider: true
+          },
+          ...groupedMethods[methodType]
+        ]
+      }, [])
     },
-    selectedCipher () {
-      return this.ciphers.find(cipher => cipher.id === this.selectedCipherId)
+    selectedMethod () {
+      return this.methods.find(method => method.id === this.selectedMethodId)
+    },
+    selectedMethodType () {
+      return this.selectedMethod ? this.selectedMethod.type : null
+    },
+    submitButtonLabel () {
+      let label
+      switch (this.selectedMethodType) {
+        case 'cipher':
+          label = this.selectedOperationId === 'encryption' ? 'Encrypt' : 'Decrypt'
+          break
+        case 'hash':
+          label = 'Hash'
+          break
+        default:
+          label = 'Submit'
+      }
+
+      return label
+    },
+    keyInputLabel () {
+      let label
+      switch (this.selectedMethodType) {
+        case 'cipher':
+          label = 'Key'
+          break
+        case 'hash':
+          label = 'Salt'
+          break
+        default:
+          label = 'Key'
+      }
+
+      return label
+    },
+    keyInputRequired () {
+      let required
+      switch (this.selectedMethodType) {
+        case 'cipher':
+          required = true
+          break
+        case 'hash':
+          required = false
+          break
+        default:
+          required = true
+      }
+
+      return required
+    },
+    showOperationSelector () {
+      let show
+      switch (this.selectedMethodType) {
+        case 'cipher':
+          show = true
+          break
+        case 'hash':
+          show = false
+          break
+        default:
+          show = false
+      }
+
+      return show
     }
   }
 }
@@ -205,7 +279,7 @@ export default {
 
       .settings-form__submit-button {
         text-align: center;
-        margin-top: 20px;
+        margin: 20px 0;
         cursor: pointer;
       }
     }

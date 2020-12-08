@@ -2,30 +2,33 @@
   <div class="des-modify-form__wrapper">
     <v-expansion-panels multiple>
       <PermutationTable
-        @checkForTableEdit="onInitialPermutationTableEdit"
-        :table-data="configuration['InitialPermutationTable']"
+        :configuration="configuration['InitialPermutationTable']"
+        :default-configuration="defaultConfiguration['InitialPermutationTable']"
         :columns-number="8"
         title="Initial Permutation Table"
+        configuration-name="InitialPermutationTable"
       ></PermutationTable>
       <RoundTables
-        @checkForTableEdit="onRoundTablesEdit"
         :configuration="configuration"
+        :default-configuration="defaultConfiguration"
       ></RoundTables>
       <PermutationTable
-        @checkForTableEdit="onFinalPermutationTableEdit"
-        :table-data="configuration['FinalPermutationTable']"
+        :configuration="configuration['FinalPermutationTable']"
+        :default-configuration="defaultConfiguration['FinalPermutationTable']"
         :columns-number="8"
         title="Final Permutation Table"
+        configuration-name="FinalPermutationTable"
       ></PermutationTable>
       <PermutationTable
-        @checkForTableEdit="onRotationsTableEdit"
-        :table-data="configuration['RotationsTable']"
+        :configuration="configuration['RotationsTable']"
+        :default-configuration="defaultConfiguration['RotationsTable']"
         :columns-number="8"
         title="Rotations Table"
+        configuration-name="RotationsTable"
       ></PermutationTable>
       <PermutedChoiceTables
-        @checkForTableEdit="onPermutedChoiceTablesEdit"
         :configuration="configuration"
+        :default-configuration="defaultConfiguration"
       ></PermutedChoiceTables>
     </v-expansion-panels>
   </div>
@@ -43,47 +46,7 @@ export default {
     RoundTables,
     PermutedChoiceTables
   },
-  props: ['configuration'],
-  data () {
-    return {
-      isInitialPermutationTableEdited: false,
-      isRoundTablesEdited: false,
-      isFinalPermutationTableEdited: false,
-      isRotationsTableEdited: false,
-      isPermutedChoiceTablesEdited: false
-    }
-  },
-  methods: {
-    onInitialPermutationTableEdit (value) {
-      this.isInitialPermutationTableEdited = value
-      this.checkForModifications()
-    },
-    onRoundTablesEdit (value) {
-      this.isRoundTablesEdited = value
-      this.checkForModifications()
-    },
-    onFinalPermutationTableEdit (value) {
-      this.isFinalPermutationTableEdited = value
-      this.checkForModifications()
-    },
-    onRotationsTableEdit (value) {
-      this.isRotationsTableEdited = value
-      this.checkForModifications()
-    },
-    onPermutedChoiceTablesEdit (value) {
-      this.isPermutedChoiceTablesEdited = value
-      this.checkForModifications()
-    },
-    checkForModifications () {
-      this.$emit('checkForModifications',
-        this.isInitialPermutationTableEdited ||
-        this.isRoundTablesEdited ||
-        this.isFinalPermutationTableEdited ||
-        this.isRotationsTableEdited ||
-        this.isPermutedChoiceTablesEdited
-      )
-    }
-  }
+  props: ['configuration', 'defaultConfiguration']
 }
 </script>
 

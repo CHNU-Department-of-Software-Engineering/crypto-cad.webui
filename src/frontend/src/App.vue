@@ -33,7 +33,7 @@ export default Vue.extend({
 
     .app-content__container {
       height: 100%;
-      padding: 20px 20px;
+      padding: 20px 20px 0 20px;
       background-color: #ffffff;
       border-radius: 7px;
       box-shadow: 0 4px 25px 0 rgba(0,0,0,.1);

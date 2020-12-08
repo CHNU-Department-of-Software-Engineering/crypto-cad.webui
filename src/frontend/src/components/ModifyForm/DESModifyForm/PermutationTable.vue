@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header
-      :class="`expanded-section-header ${isTableEdited ? 'expanded-section-header--edited' : ''}`"
+      :class="`expanded-section-header ${configuration.edited ? 'expanded-section-header--edited' : ''}`"
     >
       <span>{{ title }}</span>
     </v-expansion-panel-header>
@@ -39,19 +39,23 @@
 
 <script>
 import _ from 'lodash'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'PermutationTable',
-  props: ['tableData', 'columnsNumber', 'title'],
+  props: ['configuration', 'defaultConfiguration', 'columnsNumber', 'title', 'configurationName'],
   data () {
     return {
-      currentTableData: this.tableData.map(item => ({ value: item, edited: false }))
+      currentTableData: this.configuration?.data.map(item => ({ value: item, edited: false }))
     }
   },
   methods: {
+    ...mapMutations('method', ['updateMethodConfiguration']),
     populateDefaultValues () {
       this.currentTableData = this.getDefaultTableData()
-      this.$emit('checkForTableEdit', false)
+
+      const tableData = this.currentTableData.map(item => item.value)
+      this.updateMethodConfiguration({ configurationName: this.configurationName, data: tableData, edited: false })
     },
     onInputChange (rowIndex, columnIndex, value) {
       const rowNumber = rowIndex + 1
@@ -60,10 +64,13 @@ export default {
       const defaultTableData = this.getDefaultTableData()
 
       this.currentTableData[itemIndex].edited = defaultTableData[itemIndex].value !== +value
-      this.$emit('checkForTableEdit', this.isTableEdited)
+
+      const tableData = this.currentTableData.map(item => item.value)
+      console.log('')
+      this.updateMethodConfiguration({ configurationName: this.configurationName, data: tableData, edited: this.isTableEdited })
     },
     getDefaultTableData () {
-      return this.tableData.map(item => ({ value: item, edited: false }))
+      return this.defaultConfiguration.map(item => ({ value: item, edited: false }))
     }
   },
   computed: {

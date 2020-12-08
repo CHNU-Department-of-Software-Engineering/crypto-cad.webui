@@ -17,6 +17,7 @@
 
 <script>
 import VueDropzone from 'vue2-dropzone'
+import { mapMutations, mapState } from 'vuex'
 
 export default {
   name: 'FileDropzone',
@@ -25,7 +26,6 @@ export default {
   },
   data () {
     return {
-      uploadFileData: '',
       dropzoneOptions: {
         url: 'fake_url', // Don`t need real url because we won`t send file to backend, only text
         acceptedFiles: 'text/plain',
@@ -38,6 +38,7 @@ export default {
     }
   },
   methods: {
+    ...mapMutations('method', ['changeFileData']),
     template () {
       return (`
         <div class="dz-preview dz-file-preview">
@@ -57,16 +58,23 @@ export default {
       `)
     },
     onFileAdded (file) {
+      if (this.$refs.fileDropzone.dropzone.files.length > 1) {
+        return
+      }
+
       const fileReader = new FileReader()
 
       fileReader.readAsText(file)
       fileReader.onload = (event) => {
-        this.uploadFileData = event.target.result
+        this.changeFileData(event.target.result)
       }
     },
     removeAllFiles () {
       this.$refs.fileDropzone.removeAllFiles(true)
     }
+  },
+  computed: {
+    ...mapState('method', ['uploadedFile'])
   }
 }
 </script>
