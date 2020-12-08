@@ -4,57 +4,58 @@ using CryptoCAD.Core.Ciphers.DES;
 using CryptoCAD.Core.Ciphers.DES.Factory;
 using CryptoCAD.Core.Ciphers.GOST;
 using CryptoCAD.Core.Ciphers.Abstractions;
+using CryptoCAD.Core.Models.Services;
 using CryptoCAD.Core.Services.Abstractions;
-using CryptoCAD.Core.Factories.Abstractions;
-using CryptoCAD.Domain.Repositories;
 using CryptoCAD.Domain.Entities.Ciphers;
+using CryptoCAD.Domain.Entities.Methods.Base;
 
 namespace CryptoCAD.Core.Services
 {
     public class CipherService : ICipherService
     {
-        private readonly ICipherFactory CipherFactory;
-        private readonly IMethodsRepository MethodsRepository;
-
-        public CipherService(IMethodsRepository methodsRepository)
+        public ServiceResponse Process(byte[] key, byte[] data, CipherModes mode, MethodFamilies family, string configuration)
         {
-            MethodsRepository = methodsRepository;
-            CipherFactory = new DESCipherFactory();
-        }
+            var cipher = GetCipher(family, configuration);
+            byte[] bytes;
 
-        public byte[] Process(string name, CipherModes mode, byte[] key, byte[] data, string configuration)
-        {
-            var cipher = GetCipher(name, configuration);
             switch (mode)
             {
                 case CipherModes.Encrypt:
-                    return cipher.Encrypt(key, data);
+                    bytes = cipher.Encrypt(key, data);
+                    break;
                 case CipherModes.Decrypt:
-                    return cipher.Decrypt(key, data);
+                    bytes = cipher.Decrypt(key, data);
+                    break;
                 default:
                     throw new NotImplementedException("Cipher operation is not supported!");
             }
+
+            return new ServiceResponse
+            {
+                Data = bytes,
+                IntermediateResults = string.Empty
+            };
         }
 
-        private ICipher GetCipher(string name, string configuration)
+        private ICipher GetCipher(MethodFamilies family, string configuration = null)
         {
-            switch (name.ToLowerInvariant())
+            switch (family)
             {
-                case "des_library":
-                    return new DESCipher();
-                case "aes":
-                    return new AESCipher();
-                case "gost":
-                    return new GOSTCipher();
+                case MethodFamilies.DES:
+                    return string.IsNullOrEmpty(configuration)
+                        ? new DESCipher()
+                        : new DESCipherFactory()
+                            .CreateCipher(configuration);
+                case MethodFamilies.AES:
+                    return string.IsNullOrEmpty(configuration)
+                        ? new AESCipher()
+                        : throw new NotImplementedException($"{MethodFamilies.AES.ToFriendlyString()} cipher family modification not implemented yet!");
+                case MethodFamilies.GOST:
+                    return string.IsNullOrEmpty(configuration)
+                        ? new GOSTCipher()
+                        : throw new NotImplementedException($"{MethodFamilies.GOST.ToFriendlyString()} cipher family modification not implemented yet!");
                 default:
-                    try
-                    {
-                        return CipherFactory.CreateCipher(configuration);
-                    }
-                    catch (Exception exception)
-                    {
-                        throw new NotImplementedException($"Cipher '{name}' is not supported!", exception);
-                    }
+                    throw new ArgumentException($"{family.ToFriendlyString()} is not cipher family!");
             }
         }
     }

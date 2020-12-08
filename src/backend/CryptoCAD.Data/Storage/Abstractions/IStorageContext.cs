@@ -5,7 +5,7 @@ namespace CryptoCAD.Data.Storage.Abstractions
 {
     public interface IStorageContext
     {
-        ICollection<Method> Methods { get; }
+        ICollection<StandardMethod> StandardMethods { get; }
 
         void SaveChanges();
     }

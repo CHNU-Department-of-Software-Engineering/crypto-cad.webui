@@ -1,16 +1,28 @@
-﻿using System;
+﻿using CryptoCAD.Data.Repositories;
+using CryptoCAD.Data.Storage;
+using CryptoCAD.Domain.Entities.Methods.Base;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NUnit.Framework;
-using CryptoCAD.Data.Storage;
-using CryptoCAD.Data.Repositories;
-using CryptoCAD.Domain.Entities.Methods;
+using System.Text;
 
-namespace CryptoCAD.Data.Tests.Repositories
+namespace CryptoCAD.Data.Tests.Storage
 {
     [TestFixture]
-    public class MethodsRepositoryTests
+    public class StorageContextTests
     {
+        [TestCase("storage.crptcd")]
+        public void Seed()
+        {
+
+        }
+
+
+
+
+
         [TestCase("storage.crptcd")]
         public void InitData(string fileName)
         {
@@ -21,7 +33,7 @@ namespace CryptoCAD.Data.Tests.Repositories
             //{
             //    var context = new StorageContext(path);
 
-            //    var repository = new MethodsRepository(context);
+            //    var repository = new StandardMethodsRepository(context);
 
             //    var methods = repository.GetAll();
 

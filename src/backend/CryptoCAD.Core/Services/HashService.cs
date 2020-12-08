@@ -1,49 +1,47 @@
 ﻿using System;
-using CryptoCAD.Domain.Repositories;
+using CryptoCAD.Common.Helpers;
+using CryptoCAD.Core.Hashers.MD5;
 using CryptoCAD.Core.Hashers.SHA256;
 using CryptoCAD.Core.Hashers.SHA512;
 using CryptoCAD.Core.Hashers.Abstractions;
+using CryptoCAD.Core.Models.Services;
 using CryptoCAD.Core.Services.Abstractions;
-using CryptoCAD.Core.Factories.Abstractions;
-using CryptoCAD.Core.Hashers.MD5;
+using CryptoCAD.Domain.Entities.Methods.Base;
 
 namespace CryptoCAD.Core.Services
 {
     public class HashService : IHashService
     {
-        private readonly IHasherFactory HasherFactory;
-        private readonly IMethodsRepository MethodsRepository;
-
-        public HashService(IMethodsRepository methodsRepository)
+        public ServiceResponse Hash(byte[] data, MethodFamilies family, string configuration)
         {
-            MethodsRepository = methodsRepository;
-        }
+            var hasher = GetHasher(family, configuration);
+            var bytes = hasher.Hash(data.ToString(ConvertMode.UTF8)).ToBytes();
 
-        public string Hash(string name, string data, string configuration)
-        {
-            var hasher = GetHasher(name, configuration);
-            return hasher.Hash(data);
-        }
-
-        private IHasher GetHasher(string name, string configuration)
-        {
-            switch (name.ToLowerInvariant())
+            return new ServiceResponse
             {
-                case "sha256":
-                    return new SHA256Hasher();
-                case "sha512":
-                    return new SHA512Hasher();
-                case "md5":
-                    return new MD5Hasher();
+                Data = bytes,
+                IntermediateResults = string.Empty
+            };
+        }
+
+        private IHasher GetHasher(MethodFamilies family, string configuration = null)
+        {
+            switch (family)
+            {
+                case MethodFamilies.SHA256:
+                    return string.IsNullOrEmpty(configuration)
+                        ? new SHA256Hasher()
+                        : throw new NotImplementedException($"{MethodFamilies.SHA256.ToFriendlyString()} hasher family modification not implemented yet!");
+                case MethodFamilies.SHA512:
+                    return string.IsNullOrEmpty(configuration)
+                        ? new SHA512Hasher()
+                        : throw new NotImplementedException($"{MethodFamilies.SHA512.ToFriendlyString()} hasher family modification not implemented yet!");
+                case MethodFamilies.MD5:
+                    return string.IsNullOrEmpty(configuration)
+                        ? new MD5Hasher()
+                        : throw new NotImplementedException($"{MethodFamilies.MD5.ToFriendlyString()} hasher family modification not implemented yet!");
                 default:
-                    try
-                    {
-                        return HasherFactory.CreateHasher(configuration);
-                    }
-                    catch (Exception exception)
-                    {
-                        throw new NotImplementedException($"Hasher '{name}' is not supported!", exception);
-                    }
+                    throw new ArgumentException($"{family.ToFriendlyString()} is not hasher family!");
             }
         }
     }

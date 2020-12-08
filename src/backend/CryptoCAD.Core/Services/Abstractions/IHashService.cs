@@ -1,7 +1,13 @@
-﻿namespace CryptoCAD.Core.Services.Abstractions
+﻿using CryptoCAD.Core.Models.Services;
+using CryptoCAD.Domain.Entities.Methods.Base;
+
+namespace CryptoCAD.Core.Services.Abstractions
 {
     public interface IHashService
     {
-        string Hash(string name, string data, string configuration);
+        ServiceResponse Hash(
+            byte[] data,
+            MethodFamilies family,
+            string configuration);
     }
 }

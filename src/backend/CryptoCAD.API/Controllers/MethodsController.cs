@@ -9,6 +9,8 @@ using CryptoCAD.Domain.Repositories;
 using CryptoCAD.Domain.Entities.Methods;
 using CryptoCAD.Domain.Entities.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
+using CryptoCAD.Domain.Entities.Methods.Base;
+using AutoMapper;
 
 namespace CryptoCAD.API.Controllers
 {
@@ -18,33 +20,36 @@ namespace CryptoCAD.API.Controllers
     {
         private readonly ICipherService CipherService;
         private readonly IHashService HashService;
-        private readonly IMethodsRepository MethodsRepository;
+        private readonly IStandardMethodsRepository StandardMethodsRepository;
         private readonly ILogger<MethodsController> Logger;
+        private readonly IMapper Mapper;
 
-        public MethodsController(ICipherService cipherService, IHashService hashService, IMethodsRepository methodsRepository, ILogger<MethodsController> logger)
+        public MethodsController(ICipherService cipherService, IHashService hashService, IStandardMethodsRepository methodsRepository, ILogger<MethodsController> logger, IMapper mapper)
         {
             CipherService = cipherService;
             HashService = hashService;
-            MethodsRepository = methodsRepository;
+            StandardMethodsRepository = methodsRepository;
             Logger = logger;
+            Mapper = mapper;
         }
 
         [HttpGet]
         [Route("")]
-        public ActionResult<IEnumerable<Method>> GetMethods()
+        public ActionResult<IEnumerable<MethodModel>> GetMethods()
         {
             try
             {
-                var methods = MethodsRepository.GetAll();
+                var standardMethods = StandardMethodsRepository.GetAll();
+                var methodModels = Mapper.Map<IEnumerable<MethodModel>>(standardMethods);
+
                 Logger.LogInformation("GetMethods");
-                return Ok(methods);
+                return Ok(methodModels);
             }
             catch (Exception exception)
             {
                 Logger.LogError("GetMethods", exception);
                 return BadRequest($"Exception occured: {exception}");
             }
-            
         }
 
         [HttpPost]
@@ -60,23 +65,18 @@ namespace CryptoCAD.API.Controllers
 
                 var type = request.Type.ToMethodType();
 
-                if (type == MethodTypes.Cipher)
+                if (type == MethodTypes.SymmetricCipher)
                 {
                     var mode = request.Cipher.Mode.ToCipherMode();
-
-                    if (mode == CipherModes.None)
-                    {
-                        throw new NotSupportedException("Only 'encryption' and 'decryption' modes are supported!");
-                    }
 
                     var key = request.Cipher.Key.ToBytes();
                     var data = request.Data.ToBytes(mode == CipherModes.Decrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
 
-                    var method = MethodsRepository.Get(request.Id);
+                    var method = StandardMethodsRepository.Get(request.Id);
 
-                    var result = CipherService.Process(method.Name, mode, key, data, request.Configuration);
+                    var result = CipherService.Process(key, data, mode, method.Family, request.Configuration);
 
-                    var dataResult = result.ToString(mode == CipherModes.Encrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
+                    var dataResult = result.Data.ToString(mode == CipherModes.Encrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
 
                     return Ok(new CipherProcessResponse()
                     {
@@ -89,13 +89,13 @@ namespace CryptoCAD.API.Controllers
                 }
                 else if (type == MethodTypes.Hash)
                 {
-                    var method = MethodsRepository.Get(request.Id);
-                    var result = HashService.Hash(method.Name, request.Data, request.Configuration);
+                    var method = StandardMethodsRepository.Get(request.Id);
+                    var result = HashService.Hash(request.Data.ToBytes(), method.Name.ToMethodFamily(), request.Configuration);
 
                     return Ok(new CipherProcessResponse()
                     {
                         Id = request.Id,
-                        Data = result,
+                        Data = result.Data.ToString(ConvertMode.UTF8),
                         Configurations = request.Configuration
                     });
                 }
@@ -117,12 +117,13 @@ namespace CryptoCAD.API.Controllers
         {
             try
             {
-                var method = new Method
+                var method = new StandardMethod
                 {
                     Name = request.Name,
-                    Type = request.Type,
+                    Type = request.Type.ToMethodType(),
+                    Family = request.Name.ToMethodFamily(),
                     IsModifiable = true,
-                    IsEditable = true,
+                    Relation = StandardMethodRelations.Child,
                     SecretLength = request.SecretLength,
                     Configuration = request.Configuration
                 };
@@ -130,15 +131,15 @@ namespace CryptoCAD.API.Controllers
                 if (request.Id == Guid.Empty)
                 {
                     method.Id = Guid.NewGuid();
-                    MethodsRepository.Add(method);
+                    StandardMethodsRepository.Add(method);
                 }
                 else
                 {
-                    var repoMethod = MethodsRepository.Get(request.Id);
+                    var repoMethod = StandardMethodsRepository.Get(request.Id);
                     if (repoMethod is null)
                     {
                         method.Id = request.Id;
-                        MethodsRepository.Add(method);
+                        StandardMethodsRepository.Add(method);
                     }
                     else
                     {
@@ -149,12 +150,12 @@ namespace CryptoCAD.API.Controllers
                         else
                         {
                             method.Id = repoMethod.Id;
-                            MethodsRepository.Update(method);
+                            StandardMethodsRepository.Update(method);
                         }
                     }
                 }
 
-                MethodsRepository.SaveChanges();
+                StandardMethodsRepository.SaveChanges();
                 return Ok("Successfully saved!");
             }
             catch (Exception exception)

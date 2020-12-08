@@ -1,25 +1,28 @@
-﻿namespace CryptoCAD.Domain.Entities.Ciphers
+﻿using System;
+
+namespace CryptoCAD.Domain.Entities.Ciphers
 {
     public enum CipherModes
     {
-        None = 0,
-        Encrypt = 1,
-        Decrypt = 2
+        Encrypt = 0,
+        Decrypt = 1
     }
 
     public static class CipherModesExtensions
     {
+        private const string ENCRYPTION_NAME = "encryption";
+        private const string DECRYPTION_NAME = "decryption";
+
         public static string ToFriendlyString(this CipherModes mode)
         {
             switch (mode)
             {
                 case CipherModes.Encrypt:
-                    return "encryption";
+                    return ENCRYPTION_NAME;
                 case CipherModes.Decrypt:
-                    return "decryption";
-                case CipherModes.None:
+                    return DECRYPTION_NAME;
                 default:
-                    return "none";
+                    throw new NotSupportedException($"Cipher mode {mode} is not supported!");
             }
         }
 
@@ -27,13 +30,13 @@
         {
             switch (type)
             {
-                case "encryption":
+                case ENCRYPTION_NAME:
                     return CipherModes.Encrypt;
-                case "decryption":
+                case DECRYPTION_NAME:
                     return CipherModes.Decrypt;
                 case "none":
                 default:
-                    return CipherModes.None;
+                    throw new NotSupportedException($"Cipher mode {type} is not supported! Only cipher modes supported: '{ENCRYPTION_NAME}' and '{DECRYPTION_NAME}'");
             }
         }
     }

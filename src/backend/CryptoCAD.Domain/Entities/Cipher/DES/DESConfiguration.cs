@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace CryptoCAD.Domain.Entities.Ciphers.DES
+﻿namespace CryptoCAD.Domain.Entities.Ciphers.DES
 {
     public class DESConfiguration
     {

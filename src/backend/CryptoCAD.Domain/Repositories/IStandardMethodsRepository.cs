@@ -2,7 +2,7 @@
 
 namespace CryptoCAD.Domain.Repositories
 {
-    public interface IMethodsRepository : IRepository<Method>
+    public interface IStandardMethodsRepository : IRepository<StandardMethod>
     {
     }
 }

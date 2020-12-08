@@ -13,6 +13,9 @@ using CryptoCAD.Core.Services;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Domain.Repositories;
 
+using AutoMapper;
+using CryptoCAD.API.Mapper;
+
 namespace CryptoCAD.API
 {
     public class Startup
@@ -27,6 +30,7 @@ namespace CryptoCAD.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            AddAutoMapper(services);
             services.AddControllers();
 
             //services.AddDbContext<PostgreSqlContext>(options => options.UseNpgsql(Configuration.GetConnectionString("HerokuPostgresql")));
@@ -83,6 +87,17 @@ namespace CryptoCAD.API
             app.UseStaticFiles();
         }
 
+        private void AddAutoMapper(IServiceCollection services)
+        {
+            var mapperConfiguration = new MapperConfiguration(configuration =>
+            {
+                configuration.AddProfile(new AutoMapperProfile());
+            });
+
+            var mapper = mapperConfiguration.CreateMapper();
+            services.AddSingleton(mapper);
+        }
+
         private void AddServices(IServiceCollection services)
         {
             services.AddSingleton<IStorageContext>(context =>
@@ -92,7 +107,8 @@ namespace CryptoCAD.API
 
                 return new StorageContext(path, dropCreate);
             });
-            services.AddTransient<IMethodsRepository, MethodsRepository>();
+            services.AddTransient<IStandardMethodsRepository, StandardMethodsRepository>();
+
             services.AddTransient<ICipherService, CipherService>();
             services.AddTransient<IHashService, HashService>();
         }

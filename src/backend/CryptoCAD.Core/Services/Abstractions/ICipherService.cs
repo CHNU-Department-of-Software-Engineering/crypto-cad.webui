@@ -1,9 +1,16 @@
-﻿using CryptoCAD.Domain.Entities.Ciphers;
+﻿using CryptoCAD.Core.Models.Services;
+using CryptoCAD.Domain.Entities.Ciphers;
+using CryptoCAD.Domain.Entities.Methods.Base;
 
 namespace CryptoCAD.Core.Services.Abstractions
 {
     public interface ICipherService
     {
-        byte[] Process(string name, CipherModes mode, byte[] key, byte[] data, string configuration);
+        ServiceResponse Process(
+            byte[] key,
+            byte[] data,
+            CipherModes mode,
+            MethodFamilies family,
+            string configuration);
     }
 }
