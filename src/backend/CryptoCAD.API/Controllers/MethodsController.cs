@@ -115,25 +115,32 @@ namespace CryptoCAD.API.Controllers
 
         [HttpPost]
         [Route("savechanges")]
-        public ActionResult SaveChanges(SaveChangesRequest request)
+        public ActionResult SaveChanges(SaveRequest request)
         {
             try
             {
                 var method = new StandardMethod
                 {
                     Name = request.Name,
-                    Type = request.Type.ToMethodType(),
-                    Family = request.Name.ToMethodFamily(),
                     IsModifiable = true,
                     Relation = StandardMethodRelations.Child,
-                    SecretLength = request.SecretLength,
+                    ParentId = request.ParentId,
+                    SecretLength = (ushort)request.SecretLength,
                     Configuration = request.Configuration
                 };
 
                 if (request.Id == Guid.Empty)
                 {
                     method.Id = Guid.NewGuid();
-                    StandardMethodsRepository.Add(method);
+                    var repoMethod = StandardMethodsRepository.Get(request.ParentId.Value);
+                    if (repoMethod is null)
+                    {
+                        throw new InvalidOperationException($"Method parent not found!");
+                    }
+                    else
+                    {
+                        StandardMethodsRepository.Add(method);
+                    }
                 }
                 else
                 {
@@ -145,9 +152,9 @@ namespace CryptoCAD.API.Controllers
                     }
                     else
                     {
-                        if (repoMethod.IsModifiable)
+                        if (repoMethod.Relation == StandardMethodRelations.Parent)
                         {
-                            throw new InvalidOperationException($"Method '{repoMethod.Name}' can't be modified!");
+                            throw new InvalidOperationException($"Method '{repoMethod.Name}' can't be edited!");
                         }
                         else
                         {
