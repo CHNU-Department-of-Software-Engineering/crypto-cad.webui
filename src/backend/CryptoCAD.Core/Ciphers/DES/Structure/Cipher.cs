@@ -5,6 +5,7 @@ using CryptoCAD.Core.Utilities;
 using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 using CryptoCAD.Domain.Entities.Ciphers;
+using CryptoCAD.Core.Ciphers.Models;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.DES.Structure
@@ -25,13 +26,21 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             FP = fp;
         }
 
-        public byte[] Decrypt(byte[] key, byte[] data)
+        public CipherResult Decrypt(byte[] key, byte[] data)
         {
-            return Process(key, data, CipherModes.Encrypt);
+            var bytes = Process(key, data, CipherModes.Encrypt);
+            return new CipherResult
+            {
+                Data = bytes
+            };
         }
-        public byte[] Encrypt(byte[] key, byte[] data)
+        public CipherResult Encrypt(byte[] key, byte[] data)
         {
-            return Process(key, data, CipherModes.Decrypt);
+            var bytes = Process(key, data, CipherModes.Decrypt);
+            return new CipherResult
+            {
+                Data = bytes
+            };
         }
         public void Dispose()
         {

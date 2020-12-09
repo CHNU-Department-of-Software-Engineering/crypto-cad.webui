@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CryptoCAD.Core.Ciphers.Abstractions;
 using System.Runtime.CompilerServices;
 using CryptoCAD.Common.Helpers;
+using CryptoCAD.Core.Ciphers.Models;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.GOST
@@ -22,7 +23,7 @@ namespace CryptoCAD.Core.Ciphers.GOST
               new byte[] { 0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8,0x9,0xA,0xB,0xC,0xD,0xE,0xF }
         };
 
-        public byte[] Decrypt(byte[] key, byte[] data)
+        public CipherResult Decrypt(byte[] key, byte[] data)
         {
             var blocks64b = data.ToUInts64();
             var decryptedBlocks64b = new ulong[blocks64b.Length];
@@ -50,10 +51,13 @@ namespace CryptoCAD.Core.Ciphers.GOST
                     //Array.Copy(DecryptBlock(block, subkeys), 0, result, 8 * i, 8);
                 }
             }
-            return decryptedBlocks64b.ToBytes();
+            return new CipherResult
+            {
+                Data = decryptedBlocks64b.ToBytes()
+            };
         }
 
-        public byte[] Encrypt(byte[] key, byte[] data)
+        public CipherResult Encrypt(byte[] key, byte[] data)
         {
             var blocks64b = data.ToUInts64();
             var encryptedBlocks64b = new ulong[blocks64b.Length];
@@ -81,7 +85,11 @@ namespace CryptoCAD.Core.Ciphers.GOST
                     //Array.Copy(EncryptBlock(block, subkeys), 0, result, 8 * i, 8);
                 }
             }
-            return encryptedBlocks64b.ToBytes();
+
+            return new CipherResult
+            {
+                Data = encryptedBlocks64b.ToBytes()
+            };
         }
 
         public void Dispose()

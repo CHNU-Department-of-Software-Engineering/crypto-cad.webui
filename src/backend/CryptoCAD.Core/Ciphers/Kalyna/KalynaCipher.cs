@@ -1,4 +1,5 @@
 ﻿using CryptoCAD.Core.Ciphers.Abstractions;
+using CryptoCAD.Core.Ciphers.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -180,12 +181,12 @@ namespace CryptoCAD.Core.Ciphers.Kalyna
             }
         };
 
-        public byte[] Decrypt(byte[] key, byte[] data)
+        public CipherResult Decrypt(byte[] key, byte[] data)
         {
             throw new NotImplementedException();
         }
 
-        public byte[] Encrypt(byte[] key, byte[] data)
+        public CipherResult Encrypt(byte[] key, byte[] data)
         {
             throw new NotImplementedException();
         }

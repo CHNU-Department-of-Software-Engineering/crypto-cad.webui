@@ -29,15 +29,15 @@ namespace CryptoCAD.Core.Services
             switch (family)
             {
                 case MethodFamilies.SHA256:
-                    return string.IsNullOrEmpty(configuration)
+                    return string.IsNullOrEmpty(configuration) || !configuration.IsValidJson()
                         ? new SHA256Hasher()
                         : throw new NotImplementedException($"{MethodFamilies.SHA256.ToFriendlyString()} hasher family modification not implemented yet!");
                 case MethodFamilies.SHA512:
-                    return string.IsNullOrEmpty(configuration)
+                    return string.IsNullOrEmpty(configuration) || !configuration.IsValidJson()
                         ? new SHA512Hasher()
                         : throw new NotImplementedException($"{MethodFamilies.SHA512.ToFriendlyString()} hasher family modification not implemented yet!");
                 case MethodFamilies.MD5:
-                    return string.IsNullOrEmpty(configuration)
+                    return string.IsNullOrEmpty(configuration) || !configuration.IsValidJson()
                         ? new MD5Hasher()
                         : throw new NotImplementedException($"{MethodFamilies.MD5.ToFriendlyString()} hasher family modification not implemented yet!");
                 default:

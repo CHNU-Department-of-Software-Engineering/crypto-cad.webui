@@ -8,6 +8,8 @@ using CryptoCAD.Core.Models.Services;
 using CryptoCAD.Core.Services.Abstractions;
 using CryptoCAD.Domain.Entities.Ciphers;
 using CryptoCAD.Domain.Entities.Methods.Base;
+using CryptoCAD.Common.Helpers;
+using CryptoCAD.Core.Ciphers.Models;
 
 namespace CryptoCAD.Core.Services
 {
@@ -16,15 +18,15 @@ namespace CryptoCAD.Core.Services
         public ServiceResponse Process(byte[] key, byte[] data, CipherModes mode, MethodFamilies family, string configuration)
         {
             var cipher = GetCipher(family, configuration);
-            byte[] bytes;
+            CipherResult response;
 
             switch (mode)
             {
                 case CipherModes.Encrypt:
-                    bytes = cipher.Encrypt(key, data);
+                    response = cipher.Encrypt(key, data);
                     break;
                 case CipherModes.Decrypt:
-                    bytes = cipher.Decrypt(key, data);
+                    response = cipher.Decrypt(key, data);
                     break;
                 default:
                     throw new NotImplementedException("Cipher operation is not supported!");
@@ -32,7 +34,7 @@ namespace CryptoCAD.Core.Services
 
             return new ServiceResponse
             {
-                Data = bytes,
+                Data = response.Data,
                 IntermediateResults = string.Empty
             };
         }
@@ -42,16 +44,16 @@ namespace CryptoCAD.Core.Services
             switch (family)
             {
                 case MethodFamilies.DES:
-                    return string.IsNullOrEmpty(configuration)
+                    return string.IsNullOrEmpty(configuration) || !configuration.IsValidJson()
                         ? new DESCipher()
                         : new DESCipherFactory()
                             .CreateCipher(configuration);
                 case MethodFamilies.AES:
-                    return string.IsNullOrEmpty(configuration)
+                    return string.IsNullOrEmpty(configuration) || !configuration.IsValidJson()
                         ? new AESCipher()
                         : throw new NotImplementedException($"{MethodFamilies.AES.ToFriendlyString()} cipher family modification not implemented yet!");
                 case MethodFamilies.GOST:
-                    return string.IsNullOrEmpty(configuration)
+                    return string.IsNullOrEmpty(configuration) || !configuration.IsValidJson()
                         ? new GOSTCipher()
                         : throw new NotImplementedException($"{MethodFamilies.GOST.ToFriendlyString()} cipher family modification not implemented yet!");
                 default:

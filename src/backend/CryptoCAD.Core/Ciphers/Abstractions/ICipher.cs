@@ -1,26 +1,13 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using CryptoCAD.Core.Ciphers.Models;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.Abstractions
 {
     internal interface ICipher : IDisposable
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="data"></param>
-        /// <param name="IV"></param>
-        /// <returns>Encrypted data as byte array</returns>
-        byte[] Encrypt(byte[] key, byte[] data);
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="data"></param>
-        /// <param name="IV"></param>
-        /// <returns>Decrypted data as byte array</returns>
-        byte[] Decrypt(byte[] key, byte[] data);
+        CipherResult Encrypt(byte[] key, byte[] data);
+        CipherResult Decrypt(byte[] key, byte[] data);
     }
 }

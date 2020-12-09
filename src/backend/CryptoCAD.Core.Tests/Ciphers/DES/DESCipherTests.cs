@@ -26,8 +26,8 @@ namespace CryptoCAD.Core.Tests.Ciphers.DES
             try
             {
                 var encypted = Сipher.Encrypt(keyBytes, dataBytes);
-                var decrypted = Сipher.Decrypt(keyBytes, encypted);
-                var actual = decrypted.ToString(ConvertMode.UTF8).Trim('\0');
+                var decrypted = Сipher.Decrypt(keyBytes, encypted.Data);
+                var actual = decrypted.Data.ToString(ConvertMode.UTF8).Trim('\0');
 
                 Assert.AreEqual(data, actual);
             }

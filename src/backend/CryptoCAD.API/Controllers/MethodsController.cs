@@ -54,7 +54,7 @@ namespace CryptoCAD.API.Controllers
 
         [HttpPost]
         [Route("process")]
-        public ActionResult<CipherProcessResponse> Process(ProcessRequest request)
+        public ActionResult<ProcessResponse> Process(ProcessRequest request)
         {
             try
             {
@@ -67,9 +67,9 @@ namespace CryptoCAD.API.Controllers
 
                 if (type == MethodTypes.SymmetricCipher)
                 {
-                    var mode = request.Cipher.Mode.ToCipherMode();
+                    var mode = request.Mode.ToCipherMode();
 
-                    var key = request.Cipher.Key.ToBytes();
+                    var key = request.Secret.ToBytes();
                     var data = request.Data.ToBytes(mode == CipherModes.Decrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
 
                     var method = StandardMethodsRepository.Get(request.Id);
@@ -78,13 +78,13 @@ namespace CryptoCAD.API.Controllers
 
                     var dataResult = result.Data.ToString(mode == CipherModes.Encrypt ? ConvertMode.BASE64 : ConvertMode.UTF8);
 
-                    return Ok(new CipherProcessResponse()
+                    return Ok(new ProcessResponse
                     {
                         Id = request.Id,
-                        Mode = request.Cipher.Mode,
-                        Key = request.Cipher.Key,
-                        Data = dataResult.Trim('\0'),
-                        Configurations = request.Configuration
+                        Type = request.Type,
+                        Family = request.Family,
+                        Mode = request.Mode,
+                        Data = dataResult.Trim('\0')
                     });
                 }
                 else if (type == MethodTypes.Hash)
@@ -92,11 +92,12 @@ namespace CryptoCAD.API.Controllers
                     var method = StandardMethodsRepository.Get(request.Id);
                     var result = HashService.Hash(request.Data.ToBytes(), method.Name.ToMethodFamily(), request.Configuration);
 
-                    return Ok(new CipherProcessResponse()
+                    return Ok(new ProcessResponse()
                     {
                         Id = request.Id,
-                        Data = result.Data.ToString(ConvertMode.UTF8),
-                        Configurations = request.Configuration
+                        Type = request.Type,
+                        Family = request.Family,
+                        Data = result.Data.ToString(ConvertMode.UTF8)
                     });
                 }
                 else

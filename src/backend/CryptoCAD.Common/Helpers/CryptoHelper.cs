@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace CryptoCAD.Common.Helpers
 {
@@ -171,6 +172,31 @@ namespace CryptoCAD.Common.Helpers
             uint length = (uint)(bytes.Length / blockLength);
             length += (bytes.Length - length * blockLength == 0 ? 0 : 1);
             return length;
+        }
+
+        public static bool IsValidJson(this string value)
+        {
+            value = value.Trim();
+            try
+            {
+                if (value.StartsWith("{") && value.EndsWith("}"))
+                {
+                    JToken.Parse(value);
+                }
+                else if (value.StartsWith("[") && value.EndsWith("]"))
+                {
+                    JArray.Parse(value);
+                }
+                else
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 

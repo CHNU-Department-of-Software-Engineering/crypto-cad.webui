@@ -1,13 +1,14 @@
 ﻿using System.IO;
 using System.Security.Cryptography;
 using CryptoCAD.Core.Ciphers.Abstractions;
+using CryptoCAD.Core.Ciphers.Models;
 
 namespace CryptoCAD.Core.Ciphers
 {
     internal abstract class BaseCipher : ICipher
     {
         /// <inheritdoc/>
-        public byte[] Decrypt(byte[] key, byte[] data)
+        public CipherResult Decrypt(byte[] key, byte[] data)
         {
             byte[] decryptedData;
 
@@ -21,11 +22,14 @@ namespace CryptoCAD.Core.Ciphers
                 }
             }
 
-            return decryptedData;
+            return new CipherResult
+            {
+                Data = decryptedData
+            };
         }
 
         /// <inheritdoc/>
-        public byte[] Encrypt(byte[] key, byte[] data)
+        public CipherResult Encrypt(byte[] key, byte[] data)
         {
             byte[] encryptedData;
 
@@ -41,7 +45,10 @@ namespace CryptoCAD.Core.Ciphers
                 }
             }
 
-            return encryptedData;
+            return new CipherResult
+            {
+                Data = encryptedData
+            };
         }
 
         protected abstract ICryptoTransform GetEncryptor(byte[] key);
