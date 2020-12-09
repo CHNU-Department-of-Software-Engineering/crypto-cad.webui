@@ -38,7 +38,8 @@ namespace CryptoCAD.Core.Tests.Ciphers.DES.Structure
             var keySchedule = new KeySchedule(
                 DESConfigurations.PC1_PERMUTATION_TABLE,
                 DESConfigurations.PC2_PERMUTATION_TABLE,
-                DESConfigurations.ROTATIONS);
+                DESConfigurations.ROTATIONS,
+                new KeyScheduleResults());
 
             var function = new Function(
                 DESConfigurations.EXPANSION_PERMUTATION_TABLE,
@@ -50,7 +51,8 @@ namespace CryptoCAD.Core.Tests.Ciphers.DES.Structure
                 keySchedule,
                 round,
                 DESConfigurations.INITIAL_PERMUTATION_TABLE,
-                DESConfigurations.FINAL_PERMUTATION_TABLE);
+                DESConfigurations.FINAL_PERMUTATION_TABLE,
+                new IntermediateResults());
 
             return cipher;
         }

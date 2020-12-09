@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Security.Cryptography;
+using CryptoCAD.Common.Helpers;
 using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Ciphers.Models;
 
@@ -24,7 +25,7 @@ namespace CryptoCAD.Core.Ciphers
 
             return new CipherResult
             {
-                Data = decryptedData
+                Data = decryptedData.Trim()
             };
         }
 
@@ -47,7 +48,7 @@ namespace CryptoCAD.Core.Ciphers
 
             return new CipherResult
             {
-                Data = encryptedData
+                Data = encryptedData.Trim()
             };
         }
 

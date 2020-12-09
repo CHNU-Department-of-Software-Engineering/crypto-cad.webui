@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using CryptoCAD.Common.CiphersConfiguration;
+using CryptoCAD.Common.Helpers;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
@@ -11,8 +12,9 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
         private readonly byte[] PC1_PERMUTATION_TABLE;
         private readonly byte[] PC2_PERMUTATION_TABLE;
         private readonly byte[] ROTATIONS_TABLE;
+        private readonly KeyScheduleResults Results;
 
-        public KeySchedule(byte[] pc1PermutationTable, byte[] pc2PermutationTable, byte[] rotationsTable)
+        public KeySchedule(byte[] pc1PermutationTable, byte[] pc2PermutationTable, byte[] rotationsTable, KeyScheduleResults results)
         {
             if (pc1PermutationTable is null)
             {
@@ -42,13 +44,16 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             PC1_PERMUTATION_TABLE = pc1PermutationTable;
             PC2_PERMUTATION_TABLE = pc2PermutationTable;
             ROTATIONS_TABLE = rotationsTable;
+            Results = results;
         }
 
         public ulong[] GenerateSubkeys(byte[] key)
         {
             var key64b = BitConverter.ToUInt64(key, 0);
+            Results.InitialKey = key.Trim().ToHexadecimalString();
 
             var keyParts = KeyPermutation56bitsTo28bits(key64b);
+            Results.Subkeys = new SubkeysResults[ROTATIONS_TABLE.Length];
             var keySchedule = KeyExpansionTo48bits(keyParts.Item1, keyParts.Item2, ROTATIONS_TABLE);
 
             return keySchedule;
@@ -66,19 +71,31 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
         }
         private ulong[] KeyExpansionTo48bits(uint block28b_1, uint block28b_2, byte[] keyShifts)
         {
+            Results.InitialLeftKey = BitConverter.GetBytes(block28b_1).Trim().ToHexadecimalString();
+            Results.InitialRightKey = BitConverter.GetBytes(block28b_2).Trim().ToHexadecimalString();
             var keys48b = new ulong[keyShifts.Length];
             for (byte i = 0; i < keyShifts.Length; ++i)
             {
+                Results.Subkeys[i] = new SubkeysResults();
                 block28b_1 = LeftShift28bit(block28b_1, keyShifts[i]);
                 block28b_2 = LeftShift28bit(block28b_2, keyShifts[i]);
+                Results.Subkeys[i].KeyPartLeft = BitConverter.GetBytes(block28b_1).Trim().ToHexadecimalString();
+                Results.Subkeys[i].Subkey = BitConverter.GetBytes(block28b_2).Trim().ToHexadecimalString();
                 var block56b = Join28bitsTo56bits(block28b_1, block28b_2);
                 keys48b[i] = KeyContractionPermutation(block56b);
+                Results.Subkeys[i].Subkey = BitConverter.GetBytes(keys48b[i]).Trim().ToHexadecimalString();
             }
             return keys48b;
         }
 
         private uint LeftShift28bit(uint block28b, byte shift) =>
-            (((block28b) << (shift)) | ((block28b) >> (-(shift) & 27))) & ((1 << 32) - 1);
+            ((block28b << shift) | (block28b >> -shift & 27)) & ((1 << 32) - 1);
+
+        private uint LeftShift(uint block28b, byte shift)
+        {
+            var result = (block28b >> 28 - shift) | (uint)(block28b << shift);
+            return block28b;
+        }
 
         private ulong Join28bitsTo56bits(uint block28b_1, uint block28b_2)
         {

@@ -17,7 +17,7 @@ namespace CryptoCAD.Core.Hashers.SHA256
 			var hash = shaM.ComputeHash(bytes);
 
 			var hashStr = new StringBuilder();
-			for (int i = 0; i < 32; i++)
+			for (int i = 0; i < hash.Length; i++)
 			{
 				hashStr.Append(string.Format("{0:X2}", hash[i]));
 			}

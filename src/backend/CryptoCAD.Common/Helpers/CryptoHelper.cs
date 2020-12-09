@@ -157,6 +157,36 @@ namespace CryptoCAD.Common.Helpers
             return bytes;
         }
 
+        public static string ToHexadecimalString(this byte[] bytes)
+        {
+            var hexadecimal = new StringBuilder(bytes.Length * 2);
+            foreach (var b in bytes)
+            {
+                hexadecimal.AppendFormat("{0:x2}", b);
+            }
+            return hexadecimal.ToString();
+        }
+
+        public static byte[] Trim(this byte[] bytes)
+        {
+            var index = bytes.Length - 1;
+            while (bytes[index] == 0)
+            {
+                --index;
+                if (index < 0)
+                {
+                    return new byte[1];
+                }
+            }
+            if (index == bytes.Length - 1)
+            {
+                return bytes;
+            }
+            var trimmedBytes = new byte[index + 1];
+            Array.Copy(bytes, trimmedBytes, index + 1);
+            return trimmedBytes;
+        }
+
         private static byte[] GetBytes(byte[] bytes, uint startIndex, uint length)
         {
             var newBytes = new byte[length];

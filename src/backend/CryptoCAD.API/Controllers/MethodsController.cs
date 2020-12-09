@@ -84,7 +84,8 @@ namespace CryptoCAD.API.Controllers
                         Type = request.Type,
                         Family = request.Family,
                         Mode = request.Mode,
-                        Data = dataResult.Trim('\0')
+                        Data = dataResult.Trim('\0'),
+                        IntermediateResults = result.IntermediateResults
                     });
                 }
                 else if (type == MethodTypes.Hash)

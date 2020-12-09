@@ -35,7 +35,7 @@ namespace CryptoCAD.Core.Services
             return new ServiceResponse
             {
                 Data = response.Data,
-                IntermediateResults = string.Empty
+                IntermediateResults = response.IntermediateResults
             };
         }
 

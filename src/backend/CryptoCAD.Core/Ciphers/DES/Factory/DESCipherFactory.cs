@@ -11,10 +11,16 @@ namespace CryptoCAD.Core.Ciphers.DES.Factory
         {
             var desConfiguration = configuration.DESConfigurationFromJsonString();
 
+            var results = new IntermediateResults
+            {
+                KeySchedule = new KeyScheduleResults()
+            };
+
             var keySchedule = new KeySchedule(
                 desConfiguration.Pc1Permutation,
                 desConfiguration.Pc2Permutation,
-                desConfiguration.Rotations);
+                desConfiguration.Rotations,
+                results.KeySchedule);
 
             var function = new Function(
                 desConfiguration.ExpansionPermutation,
@@ -26,7 +32,8 @@ namespace CryptoCAD.Core.Ciphers.DES.Factory
                 keySchedule,
                 round,
                 desConfiguration.InitialPermutation,
-                desConfiguration.FinalPermutation);
+                desConfiguration.FinalPermutation,
+                results);
 
             return cipher;
         }

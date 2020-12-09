@@ -1,4 +1,5 @@
 ﻿using System;
+using CryptoCAD.Core.Ciphers.DES.Factory;
 using CryptoCAD.Core.Factories.Abstractions;
 using CryptoCAD.Domain.Entities.Methods.Base;
 

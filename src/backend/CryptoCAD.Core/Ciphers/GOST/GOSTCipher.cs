@@ -53,7 +53,7 @@ namespace CryptoCAD.Core.Ciphers.GOST
             }
             return new CipherResult
             {
-                Data = decryptedBlocks64b.ToBytes()
+                Data = decryptedBlocks64b.ToBytes().Trim()
             };
         }
 
@@ -88,7 +88,7 @@ namespace CryptoCAD.Core.Ciphers.GOST
 
             return new CipherResult
             {
-                Data = encryptedBlocks64b.ToBytes()
+                Data = encryptedBlocks64b.ToBytes().Trim()
             };
         }
 

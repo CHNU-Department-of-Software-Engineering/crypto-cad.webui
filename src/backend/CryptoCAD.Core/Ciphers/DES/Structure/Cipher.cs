@@ -6,6 +6,7 @@ using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 using CryptoCAD.Domain.Entities.Ciphers;
 using CryptoCAD.Core.Ciphers.Models;
+using Newtonsoft.Json;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
 namespace CryptoCAD.Core.Ciphers.DES.Structure
@@ -17,29 +18,35 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
 
         private readonly byte[] IP;
         private readonly byte[] FP;
+        private readonly IntermediateResults Results;
 
-        public Cipher(IKeySchedule keySchedule, IRound round, byte[] ip, byte[] fp)
+        public Cipher(IKeySchedule keySchedule, IRound round, byte[] ip, byte[] fp, IntermediateResults results)
         {
             KeySchedule = keySchedule;
             Round = round;
             IP = ip;
             FP = fp;
+            Results = results;
         }
 
         public CipherResult Decrypt(byte[] key, byte[] data)
         {
             var bytes = Process(key, data, CipherModes.Encrypt);
+            var json = JsonConvert.SerializeObject(Results);
             return new CipherResult
             {
-                Data = bytes
+                Data = bytes.Trim(),
+                IntermediateResults = json
             };
         }
         public CipherResult Encrypt(byte[] key, byte[] data)
         {
             var bytes = Process(key, data, CipherModes.Decrypt);
+            var json = JsonConvert.SerializeObject(Results);
             return new CipherResult
             {
-                Data = bytes
+                Data = bytes.Trim(),
+                IntermediateResults = json
             };
         }
         public void Dispose()
