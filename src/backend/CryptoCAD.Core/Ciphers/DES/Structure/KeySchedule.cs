@@ -77,10 +77,10 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             for (byte i = 0; i < keyShifts.Length; ++i)
             {
                 Results.Subkeys[i] = new SubkeysResults();
-                block28b_1 = LeftShift28bit(block28b_1, keyShifts[i]);
-                block28b_2 = LeftShift28bit(block28b_2, keyShifts[i]);
+                block28b_1 = block28b_1.LeftShift28b(keyShifts[i]);
+                block28b_2 = block28b_2.LeftShift28b(keyShifts[i]);
                 Results.Subkeys[i].KeyPartLeft = BitConverter.GetBytes(block28b_1).Trim().ToHexadecimalString();
-                Results.Subkeys[i].Subkey = BitConverter.GetBytes(block28b_2).Trim().ToHexadecimalString();
+                Results.Subkeys[i].KeyPartRight = BitConverter.GetBytes(block28b_2).Trim().ToHexadecimalString();
                 var block56b = Join28bitsTo56bits(block28b_1, block28b_2);
                 keys48b[i] = KeyContractionPermutation(block56b);
                 Results.Subkeys[i].Subkey = BitConverter.GetBytes(keys48b[i]).Trim().ToHexadecimalString();
