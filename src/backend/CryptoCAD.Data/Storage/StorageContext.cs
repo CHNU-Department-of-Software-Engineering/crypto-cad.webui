@@ -53,16 +53,16 @@ namespace CryptoCAD.Data.Storage
                     SecretLength = 8,
                     Configuration = desConfigurations
                 },
-                new StandardMethod
-                {
-                    Id = new Guid("30870aee-f7ea-4f6d-aa60-fdfc48cc9a60"),
-                    Name = "des_library",
-                    Type = MethodTypes.SymmetricCipher,
-                    Family = MethodFamilies.DES,
-                    IsModifiable = false,
-                    Relation = StandardMethodRelations.Parent,
-                    SecretLength = 8
-                },
+                //new StandardMethod
+                //{
+                //    Id = new Guid("30870aee-f7ea-4f6d-aa60-fdfc48cc9a60"),
+                //    Name = "des_library",
+                //    Type = MethodTypes.SymmetricCipher,
+                //    Family = MethodFamilies.DES,
+                //    IsModifiable = false,
+                //    Relation = StandardMethodRelations.Parent,
+                //    SecretLength = 8
+                //},
                 new StandardMethod
                 {
                     Id = new Guid("8cb02965-ceab-4afb-bd70-3e4382f3ddae"),

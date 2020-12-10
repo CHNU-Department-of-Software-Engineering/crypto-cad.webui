@@ -17,7 +17,7 @@ namespace CryptoCAD.Common.Helpers
                 case ConvertMode.BASE64:
                     return Convert.ToBase64String(data);
                 default:
-                    return Encoding.UTF8.GetString(data); ;
+                    return Encoding.UTF8.GetString(data);
             }
         }
         public static byte[] ToBytes(this string data, ConvertMode mode = ConvertMode.UTF8)

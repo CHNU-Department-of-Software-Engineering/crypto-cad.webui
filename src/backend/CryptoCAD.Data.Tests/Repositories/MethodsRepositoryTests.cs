@@ -5,12 +5,26 @@ using NUnit.Framework;
 using CryptoCAD.Data.Storage;
 using CryptoCAD.Data.Repositories;
 using CryptoCAD.Domain.Entities.Methods;
+using CryptoCAD.Domain.Repositories;
+using CryptoCAD.Data.Storage.Abstractions;
 
 namespace CryptoCAD.Data.Tests.Repositories
 {
     [TestFixture]
     public class MethodsRepositoryTests
     {
+        private IStorageContext Context;
+        private IStandardMethodsRepository Repository;
+
+        [SetUp]
+        public void Init()
+        {
+            var directory = Directory.GetCurrentDirectory();
+            var path = Path.Combine(directory, "storage.crptcd");
+            Context = new StorageContext(path, true);
+            Repository = new StandardMethodsRepository(Context);
+        }
+
         [TestCase("storage.crptcd")]
         public void InitData(string fileName)
         {
@@ -147,6 +161,30 @@ namespace CryptoCAD.Data.Tests.Repositories
             //        File.Delete(path);
             //    }
             //}
+        }
+
+        [Test]
+        public void Update()
+        {
+            var allMethods = Repository.GetAll();
+            var count = allMethods.Count();
+
+            var method = allMethods.First();
+
+            var methodId = method.Id;
+
+            method.Name = "New test name";
+            Repository.Update(method);
+
+            allMethods = Repository.GetAll();
+            Assert.AreEqual(count, allMethods.Count());
+
+            var updated = Repository.GetAll().Where(x => x.Id == methodId);
+            Assert.AreEqual(1, updated.Count());
+
+            var updatedMethod = updated.First();
+            Assert.IsNotNull(updatedMethod);
+            Assert.AreEqual("New test name", updatedMethod.Name);
         }
     }
 }

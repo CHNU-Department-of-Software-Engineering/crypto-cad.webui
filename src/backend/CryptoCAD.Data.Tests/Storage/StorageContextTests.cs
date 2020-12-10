@@ -14,14 +14,10 @@ namespace CryptoCAD.Data.Tests.Storage
     public class StorageContextTests
     {
         [TestCase("storage.crptcd")]
-        public void Seed()
+        public void Seed(string fileName)
         {
 
         }
-
-
-
-
 
         [TestCase("storage.crptcd")]
         public void InitData(string fileName)

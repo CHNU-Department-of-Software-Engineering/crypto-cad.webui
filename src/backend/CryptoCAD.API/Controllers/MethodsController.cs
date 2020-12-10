@@ -125,40 +125,39 @@ namespace CryptoCAD.API.Controllers
                     IsModifiable = true,
                     Relation = StandardMethodRelations.Child,
                     ParentId = request.ParentId,
-                    SecretLength = (ushort)request.SecretLength,
                     Configuration = request.Configuration
                 };
 
+                var parent = StandardMethodsRepository.Get(request.ParentId.Value);
+
+                if (parent is null)
+                {
+                    throw new ArgumentException($"Parent with id '{method.ParentId}' is not exist!");
+                }
+
+                method.Family = parent.Family;
+                method.SecretLength = parent.SecretLength;
+
                 if (request.Id == Guid.Empty)
                 {
-                    method.Id = Guid.NewGuid();
-                    var repoMethod = StandardMethodsRepository.Get(request.ParentId.Value);
-                    if (repoMethod is null)
-                    {
-                        throw new InvalidOperationException($"Method parent not found!");
-                    }
-                    else
-                    {
-                        StandardMethodsRepository.Add(method);
-                    }
+                    request.Id = Guid.NewGuid();
+                    StandardMethodsRepository.Add(method);
                 }
                 else
                 {
-                    var repoMethod = StandardMethodsRepository.Get(request.Id);
-                    if (repoMethod is null)
+                    var current = StandardMethodsRepository.Get(request.Id);
+                    if (current is null)
                     {
-                        method.Id = request.Id;
                         StandardMethodsRepository.Add(method);
                     }
                     else
                     {
-                        if (repoMethod.Relation == StandardMethodRelations.Parent)
+                        if (current.Relation == StandardMethodRelations.Parent)
                         {
-                            throw new InvalidOperationException($"Method '{repoMethod.Name}' can't be edited!");
+                            throw new InvalidOperationException($"Method with id'{current.Id}' can't be edited! It's a parent method!");
                         }
                         else
                         {
-                            method.Id = repoMethod.Id;
                             StandardMethodsRepository.Update(method);
                         }
                     }
@@ -170,6 +169,36 @@ namespace CryptoCAD.API.Controllers
             catch (Exception exception)
             {
                 Logger.LogError("SaveChanges", exception);
+                return BadRequest($"Exception occured: {exception}");
+            }
+        }
+
+        [HttpPost]
+        [Route("delete")]
+        public ActionResult Delete(DeleteRequest request)
+        {
+            try
+            {
+                if (request.Id == Guid.Empty)
+                {
+                    throw new ArgumentNullException(nameof(request.Id));
+                }
+
+                var method = StandardMethodsRepository.Get(request.Id);
+
+                if (method is null)
+                {
+                    throw new ArgumentException($"Method with id '{request.Id}' not exist!");
+                }
+
+                StandardMethodsRepository.Remove(method);
+                StandardMethodsRepository.SaveChanges();
+
+                return Ok("Successfully deleted!");
+            }
+            catch (Exception exception)
+            {
+                Logger.LogError("Delete", exception);
                 return BadRequest($"Exception occured: {exception}");
             }
         }

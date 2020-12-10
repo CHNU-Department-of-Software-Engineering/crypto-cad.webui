@@ -46,7 +46,8 @@ namespace CryptoCAD.Data.Repositories
 
         public void Update(StandardMethod entity)
         {
-            Remove(entity);
+            var toUpdate = Get(entity.Id);
+            Remove(toUpdate);
             Add(entity);
         }
 

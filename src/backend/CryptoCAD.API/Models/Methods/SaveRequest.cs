@@ -10,7 +10,6 @@ namespace CryptoCAD.API.Models.Methods
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Guid? ParentId { get; set; }
-        public int SecretLength { get; set; }
         public string Configuration { get; set; }
     }
 }
