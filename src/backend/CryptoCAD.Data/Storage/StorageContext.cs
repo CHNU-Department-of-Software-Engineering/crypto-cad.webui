@@ -38,7 +38,7 @@ namespace CryptoCAD.Data.Storage
 
         private void Seed()
         {
-            var desConfigurations = JsonConvert.SerializeObject(DESConfigurationExtension.GetConfiguration());
+            var desConfigurations = JsonConvert.SerializeObject(DESConfigurationExtension.GetConfiguration().ToDTO());
 
             _standardMethods = new List<StandardMethod>
             {

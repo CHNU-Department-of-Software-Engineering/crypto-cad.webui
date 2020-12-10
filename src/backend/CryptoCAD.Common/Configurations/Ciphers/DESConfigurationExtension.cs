@@ -302,7 +302,29 @@ namespace CryptoCAD.Common.Configurations.Ciphers
             return desConfiguration;
         }
 
-        private class DESConfigurationDTO
+        public static DESConfigurationDTO ToDTO(this DESConfiguration configuration)
+        {
+            return new DESConfigurationDTO
+            {
+                InitialPermutation = configuration.InitialPermutation?.Select(x => (int)x).ToArray(),
+                FinalPermutation = configuration.FinalPermutation?.Select(x => (int)x).ToArray(),
+                ExpansionPermutation = configuration.ExpansionPermutation?.Select(x => (int)x).ToArray(),
+                Permutation = configuration.Permutation?.Select(x => (int)x).ToArray(),
+                Pc1Permutation = configuration.Pc1Permutation?.Select(x => (int)x).ToArray(),
+                Pc2Permutation = configuration.Pc2Permutation?.Select(x => (int)x).ToArray(),
+                Rotations = configuration.Rotations?.Select(x => (int)x).ToArray(),
+                SBox1 = configuration.SBoxes?[0]?.Select(x => (int)x).ToArray(),
+                SBox2 = configuration.SBoxes?[1]?.Select(x => (int)x).ToArray(),
+                SBox3 = configuration.SBoxes?[2]?.Select(x => (int)x).ToArray(),
+                SBox4 = configuration.SBoxes?[3]?.Select(x => (int)x).ToArray(),
+                SBox5 = configuration.SBoxes?[4]?.Select(x => (int)x).ToArray(),
+                SBox6 = configuration.SBoxes?[5]?.Select(x => (int)x).ToArray(),
+                SBox7 = configuration.SBoxes?[6]?.Select(x => (int)x).ToArray(),
+                SBox8 = configuration.SBoxes?[7]?.Select(x => (int)x).ToArray()
+            };
+        }
+
+        public class DESConfigurationDTO
         {
             public int[] InitialPermutation { get; set; }
             public int[] FinalPermutation { get; set; }
