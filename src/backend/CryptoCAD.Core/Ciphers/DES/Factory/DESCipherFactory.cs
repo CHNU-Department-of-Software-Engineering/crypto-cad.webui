@@ -13,6 +13,7 @@ namespace CryptoCAD.Core.Ciphers.DES.Factory
 
             var results = new IntermediateResults
             {
+                Rounds = new RoundResults[desConfiguration.Rotations.Length],
                 KeySchedule = new KeyScheduleResults()
             };
 
@@ -26,6 +27,7 @@ namespace CryptoCAD.Core.Ciphers.DES.Factory
                 desConfiguration.ExpansionPermutation,
                 desConfiguration.Permutation,
                 desConfiguration.SBoxes);
+
             var round = new Round(function);
 
             var cipher = new Cipher(

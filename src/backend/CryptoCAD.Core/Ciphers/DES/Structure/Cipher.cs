@@ -84,7 +84,8 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             uint N1 = (uint)(block64b & 0xFFFFFFFF), N2 = (uint)((block64b >> 32) & 0xFFFFFFFF);
             for (byte i = 0; i < keys.Length; i++)
             {
-                var res = Round.Process(N1, N2, keys[i]);
+                Results.Rounds[i] = new RoundResults();
+                var res = Round.Process(N1, N2, keys[i], Results.Rounds[i]);
                 N1 = res.Item1;
                 N2 = res.Item2;
             }

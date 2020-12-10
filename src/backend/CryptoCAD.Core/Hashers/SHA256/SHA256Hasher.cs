@@ -23,8 +23,6 @@ namespace CryptoCAD.Core.Hashers.SHA256
 			}
 
 			return hashStr.ToString();
-
-			//return SHA256(data);
         }
 
 		static void DBL_INT_ADD(ref uint a, ref uint b, uint c)

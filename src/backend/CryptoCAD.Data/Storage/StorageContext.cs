@@ -6,6 +6,7 @@ using CryptoCAD.Domain.Entities.Methods;
 using CryptoCAD.Domain.Entities.Methods.Base;
 using CryptoCAD.Data.Storage.Abstractions;
 using CryptoCAD.Common.CiphersConfiguration;
+using CryptoCAD.Common.Configurations.Ciphers;
 
 namespace CryptoCAD.Data.Storage
 {
@@ -38,7 +39,7 @@ namespace CryptoCAD.Data.Storage
 
         private void Seed()
         {
-            var desConfigurations = JsonConvert.SerializeObject(DESConfigurations.GetConfiguration());
+            var desConfigurations = JsonConvert.SerializeObject(DESConfigurationExtension.GetConfiguration());
 
             _standardMethods = new List<StandardMethod>
             {

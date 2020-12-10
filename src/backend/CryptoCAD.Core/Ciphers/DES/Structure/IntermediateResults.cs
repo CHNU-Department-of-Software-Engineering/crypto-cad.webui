@@ -22,7 +22,12 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
 
     internal class RoundResults
     {
-
+        public string RoundKey { get; set; }
+        public string InitialLeftBlock { get; set; }
+        public string InitialRightBlock { get; set; }
+        public FunctionResults FunctionResults { get; set; }
+        public string ProcessedLeftBlock { get; set; }
+        public string ProcessedRightBlock { get; set; }
     }
     internal class KeyScheduleResults
     {
@@ -31,10 +36,14 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
         public string InitialRightKey { get; set; }
         public SubkeysResults[] Subkeys { get; set; }
     }
-    public class SubkeysResults
+    internal class SubkeysResults
     {
         public string KeyPartLeft { get; set; }
         public string KeyPartRight { get; set; }
         public string Subkey { get; set; }
+    }
+    internal class FunctionResults
+    {
+
     }
 }

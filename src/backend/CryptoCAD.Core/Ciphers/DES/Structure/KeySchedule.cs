@@ -88,15 +88,6 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             return keys48b;
         }
 
-        private uint LeftShift28bit(uint block28b, byte shift) =>
-            ((block28b << shift) | (block28b >> -shift & 27)) & ((1 << 32) - 1);
-
-        private uint LeftShift(uint block28b, byte shift)
-        {
-            var result = (block28b >> 28 - shift) | (uint)(block28b << shift);
-            return block28b;
-        }
-
         private ulong Join28bitsTo56bits(uint block28b_1, uint block28b_2)
         {
             ulong block56b = (block28b_1 >> 4);
