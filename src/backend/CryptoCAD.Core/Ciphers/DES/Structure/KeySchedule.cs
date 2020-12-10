@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using CryptoCAD.Common.CiphersConfiguration;
+using CryptoCAD.Common.Configurations.Ciphers;
 using CryptoCAD.Common.Helpers;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 
@@ -31,14 +31,14 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
                 throw new ArgumentNullException(nameof(rotationsTable));
             }
 
-            if (pc1PermutationTable.Length != DESConfigurations.PC1_PERMUTATION_TABLE_LENGTH)
+            if (pc1PermutationTable.Length != DESConfigurationExtension.PC1_PERMUTATION_TABLE_LENGTH)
             {
-                throw new ArgumentException($"PC1 Permutation table should have {DESConfigurations.PC1_PERMUTATION_TABLE_LENGTH} lenght, not {pc1PermutationTable.Length}");
+                throw new ArgumentException($"PC1 Permutation table should have {DESConfigurationExtension.PC1_PERMUTATION_TABLE_LENGTH} lenght, not {pc1PermutationTable.Length}");
             }
 
-            if (pc2PermutationTable.Length != DESConfigurations.PC2_PERMUTATION_TABLE_LENGTH)
+            if (pc2PermutationTable.Length != DESConfigurationExtension.PC2_PERMUTATION_TABLE_LENGTH)
             {
-                throw new ArgumentException($"PC2 Permutation table should have {DESConfigurations.PC2_PERMUTATION_TABLE_LENGTH} lenght, not {pc2PermutationTable.Length}");
+                throw new ArgumentException($"PC2 Permutation table should have {DESConfigurationExtension.PC2_PERMUTATION_TABLE_LENGTH} lenght, not {pc2PermutationTable.Length}");
             }
 
             PC1_PERMUTATION_TABLE = pc1PermutationTable;

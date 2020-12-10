@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using CryptoCAD.Common.CiphersConfiguration;
+using CryptoCAD.Common.Configurations.Ciphers;
 using CryptoCAD.Core.Ciphers.DES.Structure.Abstractions;
 
 [assembly: InternalsVisibleTo("CryptoCAD.Core.Tests")]
@@ -21,19 +21,19 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             byte[][] substitutionBoxes
             )
         {
-            if (expansionPermutationTable.Length != DESConfigurations.EXPANSION_PERMUTATION_TABLE_LENGTH)
+            if (expansionPermutationTable.Length != DESConfigurationExtension.EXPANSION_PERMUTATION_TABLE_LENGTH)
             {
                 throw new ArgumentOutOfRangeException(nameof(expansionPermutationTable));
             }
-            if (permutationTable.Length != DESConfigurations.PERMUTATION_TABLE_LENGTH)
+            if (permutationTable.Length != DESConfigurationExtension.PERMUTATION_TABLE_LENGTH)
             {
                 throw new ArgumentOutOfRangeException(nameof(permutationTable));
             }
-            if (substitutionBoxes.Length != DESConfigurations.SUBSTITUTION_BOXES_LENGTH)
+            if (substitutionBoxes.Length != DESConfigurationExtension.SUBSTITUTION_BOXES_LENGTH)
             {
                 throw new ArgumentOutOfRangeException(nameof(substitutionBoxes));
             }
-            if (substitutionBoxes[0].Length != DESConfigurations.SUBSTITUTION_BOX_LENGTH)
+            if (substitutionBoxes[0].Length != DESConfigurationExtension.SUBSTITUTION_BOX_LENGTH)
             {
                 throw new ArgumentOutOfRangeException(nameof(substitutionBoxes));
             }

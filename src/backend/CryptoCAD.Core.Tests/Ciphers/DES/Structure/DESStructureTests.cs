@@ -1,8 +1,9 @@
 ﻿using NUnit.Framework;
 using CryptoCAD.Common.Helpers;
-using CryptoCAD.Common.CiphersConfiguration;
 using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Ciphers.DES.Structure;
+using CryptoCAD.Common.Configurations.Ciphers;
+using System;
 
 namespace CryptoCAD.Core.Tests.Ciphers.DES.Structure
 {
@@ -35,24 +36,30 @@ namespace CryptoCAD.Core.Tests.Ciphers.DES.Structure
 
         private ICipher CreateCipher()
         {
+            var results = new IntermediateResults
+            {
+                Rounds = new RoundResults[DESConfigurationExtension.ROTATIONS.Length],
+                KeySchedule = new KeyScheduleResults()
+            };
+
             var keySchedule = new KeySchedule(
-                DESConfigurations.PC1_PERMUTATION_TABLE,
-                DESConfigurations.PC2_PERMUTATION_TABLE,
-                DESConfigurations.ROTATIONS,
-                new KeyScheduleResults());
+                DESConfigurationExtension.PC1_PERMUTATION_TABLE,
+                DESConfigurationExtension.PC2_PERMUTATION_TABLE,
+                DESConfigurationExtension.ROTATIONS,
+                results.KeySchedule);
 
             var function = new Function(
-                DESConfigurations.EXPANSION_PERMUTATION_TABLE,
-                DESConfigurations.PERMUTATION_TABLE,
-                DESConfigurations.SUBSTITUTION_BOXES);
+                DESConfigurationExtension.EXPANSION_PERMUTATION_TABLE,
+                DESConfigurationExtension.PERMUTATION_TABLE,
+                DESConfigurationExtension.SUBSTITUTION_BOXES);
             var round = new Round(function);
 
             var cipher = new Cipher(
                 keySchedule,
                 round,
-                DESConfigurations.INITIAL_PERMUTATION_TABLE,
-                DESConfigurations.FINAL_PERMUTATION_TABLE,
-                new IntermediateResults());
+                DESConfigurationExtension.INITIAL_PERMUTATION_TABLE,
+                DESConfigurationExtension.FINAL_PERMUTATION_TABLE,
+                results);
 
             return cipher;
         }
