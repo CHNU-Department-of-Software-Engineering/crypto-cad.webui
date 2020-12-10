@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using AutoMapper;
 using CryptoCAD.Common.Helpers;
-using CryptoCAD.API.Models.Ciphers;
 using CryptoCAD.API.Models.Methods;
 using CryptoCAD.Domain.Repositories;
 using CryptoCAD.Domain.Entities.Methods;
+using CryptoCAD.Domain.Entities.Methods.Base;
 using CryptoCAD.Domain.Entities.Ciphers;
 using CryptoCAD.Core.Services.Abstractions;
-using CryptoCAD.Domain.Entities.Methods.Base;
-using AutoMapper;
 
 namespace CryptoCAD.API.Controllers
 {
