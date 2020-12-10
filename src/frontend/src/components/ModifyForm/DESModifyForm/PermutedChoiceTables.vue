@@ -9,18 +9,18 @@
       <div class="permuted-choice-tables__container">
         <v-expansion-panels multiple>
           <PermutationTable
-            :configuration="configuration['Pc1PermutationTable']"
-            :default-configuration="defaultConfiguration['Pc1PermutationTable']"
+            :configuration="configuration['Pc1Permutation']"
+            :default-configuration="defaultConfiguration['Pc1Permutation']"
             :columns-number="8"
             title="Permuted Choice Table #1"
-            configuration-name="Pc1PermutationTable"
+            configuration-name="Pc1Permutation"
           ></PermutationTable>
           <PermutationTable
-            :configuration="configuration['Pc2PermutationTable']"
-            :default-configuration="defaultConfiguration['Pc2PermutationTable']"
+            :configuration="configuration['Pc2Permutation']"
+            :default-configuration="defaultConfiguration['Pc2Permutation']"
             :columns-number="8"
             title="Permuted Choice Table #2"
-            configuration-name="Pc2PermutationTable"
+            configuration-name="Pc2Permutation"
           ></PermutationTable>
         </v-expansion-panels>
       </div>
@@ -39,7 +39,7 @@ export default {
   },
   computed: {
     isPermutedChoiceTablesEdited () {
-      return this.configuration.Pc1PermutationTable.edited || this.configuration.Pc2PermutationTable.edited
+      return this.configuration.Pc1Permutation.edited || this.configuration.Pc2Permutation.edited
     }
   }
 }

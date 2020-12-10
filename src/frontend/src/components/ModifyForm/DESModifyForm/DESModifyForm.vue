@@ -2,29 +2,29 @@
   <div class="des-modify-form__wrapper">
     <v-expansion-panels multiple>
       <PermutationTable
-        :configuration="configuration['InitialPermutationTable']"
-        :default-configuration="defaultConfiguration['InitialPermutationTable']"
+        :configuration="configuration['InitialPermutation']"
+        :default-configuration="defaultConfiguration['InitialPermutation']"
         :columns-number="8"
         title="Initial Permutation Table"
-        configuration-name="InitialPermutationTable"
+        configuration-name="InitialPermutation"
       ></PermutationTable>
       <RoundTables
         :configuration="configuration"
         :default-configuration="defaultConfiguration"
       ></RoundTables>
       <PermutationTable
-        :configuration="configuration['FinalPermutationTable']"
-        :default-configuration="defaultConfiguration['FinalPermutationTable']"
+        :configuration="configuration['FinalPermutation']"
+        :default-configuration="defaultConfiguration['FinalPermutation']"
         :columns-number="8"
         title="Final Permutation Table"
-        configuration-name="FinalPermutationTable"
+        configuration-name="FinalPermutation"
       ></PermutationTable>
       <PermutationTable
-        :configuration="configuration['RotationsTable']"
-        :default-configuration="defaultConfiguration['RotationsTable']"
+        :configuration="configuration['Rotations']"
+        :default-configuration="defaultConfiguration['Rotations']"
         :columns-number="8"
         title="Rotations Table"
-        configuration-name="RotationsTable"
+        configuration-name="Rotations"
       ></PermutationTable>
       <PermutedChoiceTables
         :configuration="configuration"

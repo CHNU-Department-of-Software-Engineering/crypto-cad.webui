@@ -1,18 +1,19 @@
 <template>
   <div class="main-header__wrapper">
     <h3 class="main-header__login" @click="$router.push('/settings')">CryptoCAD</h3>
-    <LoginDialog/>
+    <!--//TODO Uncomment when authentication will be ready on backend-->
+    <!--    <LoginDialog/>-->
   </div>
 </template>
 
 <script>
-import LoginDialog from './LoginDialog'
+// import LoginDialog from './LoginDialog'
 
 export default {
-  name: 'Header',
-  components: {
-    LoginDialog
-  }
+  name: 'Header'
+  // components: {
+  //   LoginDialog
+  // }
 }
 </script>
 

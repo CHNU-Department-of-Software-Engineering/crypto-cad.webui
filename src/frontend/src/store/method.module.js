@@ -1,5 +1,6 @@
 import _ from 'lodash'
-import MethodService from '../services/method.service'
+import methodService from '../services/method.service'
+import { getOnlyEditedPartOfConfig, populateEditedFieldToConfig } from '../utils/method-helper'
 
 export const method = {
   namespaced: true,
@@ -26,7 +27,7 @@ export const method = {
   },
   actions: {
     getMethods ({ commit }) {
-      return MethodService.getMethods().then(
+      return methodService.getMethods().then(
         methods => {
           const data = methods.data
           commit('getMethodsSuccess', data)
@@ -38,32 +39,48 @@ export const method = {
         }
       )
     },
+    deleteMethod ({ dispatch, state }) {
+      return methodService.deleteMethod(state.selectedMethodId).then(
+        data => {
+          dispatch('getMethods')
+          return Promise.resolve(data)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
+    saveMethod ({ dispatch, state }, payload) {
+      const selectedMethod = state.methods.find(method => method.id === state.selectedMethodId)
+      return methodService.saveMethod({
+        ...(payload ? {} : { id: state.selectedMethodId }),
+        name: !payload ? selectedMethod.name : payload,
+        parentId: payload ? selectedMethod.id : selectedMethod.parentId,
+        configuration: selectedMethod.isModifiable ? getOnlyEditedPartOfConfig(state.currentConfiguration) : null
+      }).then(
+        data => {
+          dispatch('getMethods')
+          return Promise.resolve(data)
+        },
+        error => {
+          return Promise.reject(error)
+        }
+      )
+    },
     processMethod ({ state }) {
       const selectedMethod = state.methods.find(method => method.id === state.selectedMethodId)
       const processMethodInfo = {
         data: state.fileData,
         type: selectedMethod.type,
         id: selectedMethod.id,
+        family: selectedMethod.family,
         mode: state.selectedOperationId,
-        key: state.secretKey,
-        configuration: selectedMethod.isModifiable
-          ? Object.keys(state.currentConfiguration).reduce(
-            (result, configItemKey) => {
-              if (state.currentConfiguration[configItemKey].edited) {
-                return {
-                  ...result,
-                  [configItemKey]: state.currentConfiguration[configItemKey].data
-                }
-              }
-
-              return result
-            }, {}
-          )
-          : null
+        secret: state.secretKey,
+        configuration: selectedMethod.isModifiable ? getOnlyEditedPartOfConfig(state.currentConfiguration) : null
       }
 
       return new Promise((resolve, reject) => {
-        MethodService.processMethod(processMethodInfo).then(
+        methodService.processMethod(processMethodInfo).then(
           processedMethod => {
             resolve(processedMethod)
           },
@@ -76,7 +93,14 @@ export const method = {
   },
   mutations: {
     getMethodsSuccess (state, methods) {
-      state.methods = _.sortBy(methods, 'type')
+      const sortedMethods = _.sortBy(methods, 'type')
+      const firstMethodInArray = sortedMethods && sortedMethods.length ? sortedMethods[0] : null
+      const methodConfiguration = firstMethodInArray ? firstMethodInArray.configuration : null
+      state.methods = sortedMethods
+      state.selectedMethodId = firstMethodInArray ? firstMethodInArray.id : null
+      state.selectedOperationId = firstMethodInArray?.type === 'cipher' ? 'encryption' : null
+      state.currentConfiguration = firstMethodInArray.isModifiable ? populateEditedFieldToConfig(methodConfiguration) : {}
+      console.log('populateEditedFieldToConfig(methodConfiguration)', populateEditedFieldToConfig(methodConfiguration))
       state.loading.global = false
     },
     getMethodsFailure (state) {
@@ -86,22 +110,8 @@ export const method = {
     selectMethod (state, selectedMethodId) {
       const selectedMethod = state.methods.find(method => method.id === selectedMethodId)
       const methodConfiguration = selectedMethod.configuration
-      const parsedConfiguration = methodConfiguration ? JSON.parse(methodConfiguration) : {}
 
-      if (selectedMethod.isModifiable) {
-        state.currentConfiguration = Object.keys(parsedConfiguration).reduce((result, configurationItemKey) => {
-          return {
-            ...result,
-            [configurationItemKey]: {
-              data: parsedConfiguration[configurationItemKey],
-              edited: false
-            }
-          }
-        }, {})
-      } else {
-        state.currentConfiguration = {}
-      }
-
+      state.currentConfiguration = selectedMethod.isModifiable ? populateEditedFieldToConfig(methodConfiguration) : {}
       state.selectedMethodId = selectedMethodId
     },
     selectOperation (state, selectedOperationId) {

@@ -3,31 +3,32 @@
     <div class="settings-form__container">
       <div class="settings-form__header">
         <div class="settings-form__header-title">Settings</div>
-        <div class="settings-form__header-buttons-container">
-          <v-tooltip top :disabled="isSignedIn">
-            <template v-slot:activator="{ on, attrs }">
-              <div class="settings-form__header-button" v-on="on" v-bind="attrs">
-                <v-btn
-                  width="250"
-                  color="success"
-                  outlined
-                  :disabled="isSignedIn"
-                  @click="$router.push('method/new')"
-                >
-                  Add New Method
-                </v-btn>
-              </div>
-            </template>
-            <span>Only Signed In Users can create New Method</span>
-          </v-tooltip>
-        </div>
+        <!--//TODO Uncomment when add new method functionality will be ready on backend-->
+        <!--        <div class="settings-form__header-buttons-container">-->
+        <!--          <v-tooltip top :disabled="isSignedIn">-->
+        <!--            <template v-slot:activator="{ on, attrs }">-->
+        <!--              <div class="settings-form__header-button" v-on="on" v-bind="attrs">-->
+        <!--                <v-btn-->
+        <!--                  width="250"-->
+        <!--                  color="success"-->
+        <!--                  outlined-->
+        <!--                  :disabled="isSignedIn"-->
+        <!--                  @click="$router.push('method/new')"-->
+        <!--                >-->
+        <!--                  Add New Method-->
+        <!--                </v-btn>-->
+        <!--              </div>-->
+        <!--            </template>-->
+        <!--            <span>Only Signed In Users can create New Method</span>-->
+        <!--          </v-tooltip>-->
+        <!--        </div>-->
       </div>
       <div class="settings-form__content">
         <v-form v-model="isFormValid" ref="settingsForm">
           <v-row>
             <v-col cols="4">
               <v-select
-                @change="selectMethod"
+                v-model="methodId"
                 :items="formattedMethods"
                 :rules="[inputRules.required]"
                 label="Select Method"
@@ -37,7 +38,7 @@
             </v-col>
             <v-col v-if="showOperationSelector" offset="4" cols="4">
               <v-select
-                @change="selectOperation"
+                v-model="operationId"
                 :items="operations"
                 :rules="[inputRules.required]"
                 label="Select Operation"
@@ -49,7 +50,7 @@
           <v-row v-if="selectedMethod">
             <v-col class="settings-form__content-item" cols="12">
               <v-text-field
-                @change="changeSecretKey"
+                v-model="secretKeyValue"
                 :value="secretKey"
                 :label="keyInputLabel"
                 :rules="keyInputRequired
@@ -70,26 +71,71 @@
               <ModifyForm :defaultConfiguration="selectedMethod.configuration ? JSON.parse(selectedMethod.configuration) : {}"></ModifyForm>
             </v-col>
           </v-row>
+          <v-row v-if="Object.values(currentConfiguration).length">
+            <v-col class="settings-form__content-item" cols="12">
+              <v-checkbox
+                v-model="downloadIntermediateResults"
+                label="Download Intermediate Results"
+                color="success"
+                outlined
+              ></v-checkbox>
+            </v-col>
+          </v-row>
         </v-form>
       </div>
     </div>
     <div class="settings-form__footer">
       <FileDropzone ref="fileDropzone"></FileDropzone>
-      <div class="settings-form__submit-button">
-        <v-btn :disabled="!isFormValid" outlined width="400px" color="success" @click="onSubmitForm">
-          {{ submitButtonLabel }}
-        </v-btn>
+      <div :class="`settings-form__footer-buttons ${selectedMethod.relation === 'parent' ? 'settings-form__footer-center': ''}`">
+        <div v-if="selectedMethod && selectedMethod.relation !== 'parent'">
+          <v-btn
+            class="settings-form__footer-button"
+            :disabled="!isFormValid"
+            outlined
+            width="200px"
+            color="error"
+            @click="showDeleteDialog=true"
+          >
+            Delete
+          </v-btn>
+        </div>
+       <div>
+         <v-btn
+           class="settings-form__footer-button"
+           :disabled="!isFormValid"
+           outlined
+           width="200px"
+           color="success"
+           @click="onSubmitForm"
+         >
+           {{ submitButtonLabel }}
+         </v-btn>
+         <v-btn
+           @click.stop=" selectedMethod.relation === 'parent' ? showSaveDialog=true : saveMethod()"
+           v-if="selectedMethod &&  (selectedMethod.isModifiable || selectedMethod.relation === 'child')"
+           class="settings-form__footer-button"
+           :disabled="!isFormValid"
+           outlined
+           width="200px"
+           color="success"
+         >
+           {{ selectedMethod.relation === 'parent' ? 'Save' : 'Update'}}
+         </v-btn>
+       </div>
       </div>
     </div>
+    <SaveMethodDialog v-model="showSaveDialog" @onSave="saveMethod"></SaveMethodDialog>
+    <DeleteMethodDialog v-model="showDeleteDialog" @onDelete="deleteMethod"></DeleteMethodDialog>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
 import _ from 'lodash'
 import moment from 'moment'
 import fileSaver from 'file-saver'
 import ModifyForm from '../ModifyForm/ModifyForm'
+import SaveMethodDialog from './SaveMethodDialog'
+import DeleteMethodDialog from './DeleteMethodDialog'
 import FileDropzone from './FileDropzone'
 import { mapActions, mapState, mapMutations } from 'vuex'
 
@@ -97,13 +143,18 @@ export default {
   name: 'SettingsForm',
   components: {
     ModifyForm,
-    FileDropzone
+    FileDropzone,
+    SaveMethodDialog,
+    DeleteMethodDialog
   },
   mounted () {
     this.getMethods()
   },
   data () {
     return {
+      showSaveDialog: false,
+      showDeleteDialog: false,
+      downloadIntermediateResults: true,
       isFormValid: true,
       showTitle: true,
       isEncrypt: true,
@@ -117,23 +168,27 @@ export default {
     }
   },
   methods: {
-    ...mapActions('method', ['getMethods', 'processMethod']),
+    ...mapActions('method', ['getMethods', 'processMethod', 'deleteMethod', 'saveMethod']),
     ...mapMutations('method', ['selectMethod', 'selectOperation', 'changeSecretKey']),
     onSubmitForm () {
       this.processMethod().then((data) => {
-        console.log('data component', data)
         this.$refs.fileDropzone.removeAllFiles()
-        this.downloadFile(data.data.data)
+        this.downloadFile(data.data)
       }).catch((e) => {
         console.log('error', e)
       })
     },
-    downloadFile (text) {
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' })
+    downloadFile (processedMethod) {
+      const dataBlob = new Blob([processedMethod.data], { type: 'text/plain;charset=utf-8' })
       const currentDate = moment().format('YYYY-MM-DD_h-mm-ss')
       const operation = this.selectedOperation === 'encryption' ? 'encrypted' : 'decrypted'
 
-      fileSaver.saveAs(blob, `${operation}_${currentDate}.txt`)
+      if (this.downloadIntermediateResults) {
+        const intermediateResultsBlob = new Blob([processedMethod.intermediateResults], { type: 'text/plain;charset=utf-8' })
+        fileSaver.saveAs(intermediateResultsBlob, `${this.selectedMethod.name}_Intermediate_Results_${currentDate}.txt`)
+      }
+
+      fileSaver.saveAs(dataBlob, `${this.selectedMethod.name}_${operation}_${currentDate}.txt`)
     }
   },
   computed: {
@@ -141,6 +196,30 @@ export default {
       'method',
       ['methods', 'selectedMethodId', 'currentConfiguration', 'operations', 'selectedOperationId', 'secretKey']
     ),
+    methodId: {
+      set (methodId) {
+        this.selectMethod(methodId)
+      },
+      get () {
+        return this.selectedMethodId
+      }
+    },
+    operationId: {
+      set (operationId) {
+        this.selectOperation(operationId)
+      },
+      get () {
+        return this.selectedOperationId
+      }
+    },
+    secretKeyValue: {
+      set (secretKeyValue) {
+        this.changeSecretKey(secretKeyValue)
+      },
+      get () {
+        return this.secretKey
+      }
+    },
     isSignedIn () {
       return this.$store.state.auth.status.signedIn
     },
@@ -175,10 +254,10 @@ export default {
       return this.selectedMethod ? this.selectedMethod.type : null
     },
     submitButtonLabel () {
-      let label
+      let label = 'Submit'
       switch (this.selectedMethodType) {
         case 'cipher':
-          label = this.selectedOperationId === 'encryption' ? 'Encrypt' : 'Decrypt'
+          label = this.selectedOperationId ? this.selectedOperationId === 'encryption' ? 'Encrypt' : 'Decrypt' : 'Submit'
           break
         case 'hash':
           label = 'Hash'
@@ -277,10 +356,19 @@ export default {
     .settings-form__footer {
       flex-shrink: 0;
 
-      .settings-form__submit-button {
-        text-align: center;
+      .settings-form__footer-buttons {
+        display: flex;
+        justify-content: space-between;
         margin: 20px 0;
         cursor: pointer;
+
+        .settings-form__footer-button {
+          margin: 0 5px;
+        }
+      }
+
+      .settings-form__footer-center {
+        justify-content: center;
       }
     }
   }

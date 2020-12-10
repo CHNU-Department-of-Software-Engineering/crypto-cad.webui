@@ -9,11 +9,11 @@
       <div class="round-tables__container">
         <v-expansion-panels multiple>
           <PermutationTable
-            :configuration="configuration['ExpansionPermutationTable']"
-            :default-configuration="defaultConfiguration['ExpansionPermutationTable']"
+            :configuration="configuration['ExpansionPermutation']"
+            :default-configuration="defaultConfiguration['ExpansionPermutation']"
             :columns-number="8"
             title="Expansion Permutation Table"
-            configuration-name="ExpansionPermutationTable"
+            configuration-name="ExpansionPermutation"
           ></PermutationTable>
           <v-expansion-panel>
             <v-expansion-panel-header
@@ -36,11 +36,11 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
           <PermutationTable
-            :configuration="configuration['PermutationTable']"
-            :default-configuration="defaultConfiguration['PermutationTable']"
+            :configuration="configuration['Permutation']"
+            :default-configuration="defaultConfiguration['Permutation']"
             :columns-number="8"
             title="Permutation Table"
-            configuration-name="PermutationTable"
+            configuration-name="Permutation"
           ></PermutationTable>
         </v-expansion-panels>
       </div>
@@ -60,7 +60,7 @@ export default {
   },
   computed: {
     isRoundTablesEdited () {
-      return this.isSBoxTablesEdited || this.configuration.PermutationTable.edited || this.configuration.ExpansionPermutationTable.edited
+      return this.isSBoxTablesEdited || this.configuration.Permutation.edited || this.configuration.ExpansionPermutation.edited
     },
     isSBoxTablesEdited () {
       let edited = false

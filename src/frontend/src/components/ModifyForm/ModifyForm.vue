@@ -46,7 +46,7 @@ export default {
 
 <style lang="scss">
   .modify-form__wrapper {
-    margin-bottom: 40px;
+    margin-bottom: 10px;
     padding: 2px;
 
     .modify-form__container {
