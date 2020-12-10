@@ -10,6 +10,7 @@ namespace CryptoCAD.API.Models.Methods
         public string Family { get; set; }
         public bool IsModifiable { get; set; }
         public string Relation { get; set; }
+        public Guid? ParentId { get; set; }
         public int SecretLength { get; set; }
         public string Configuration { get; set; }
 
