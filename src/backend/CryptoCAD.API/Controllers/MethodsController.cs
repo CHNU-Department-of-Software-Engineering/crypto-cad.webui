@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
 using CryptoCAD.Common.Helpers;
+using CryptoCAD.Common.Configurations.Ciphers;
 using CryptoCAD.API.Models.Methods;
 using CryptoCAD.Domain.Repositories;
 using CryptoCAD.Domain.Entities.Methods;
@@ -118,13 +119,15 @@ namespace CryptoCAD.API.Controllers
         {
             try
             {
+                var configuration = request.Configuration.DESConfigurationFromJsonString().ToJsonString();
+
                 var method = new StandardMethod
                 {
                     Name = request.Name,
                     IsModifiable = true,
                     Relation = StandardMethodRelations.Child,
                     ParentId = request.ParentId,
-                    Configuration = request.Configuration
+                    Configuration = configuration
                 };
 
                 var parent = StandardMethodsRepository.Get(request.ParentId.Value);
@@ -139,7 +142,7 @@ namespace CryptoCAD.API.Controllers
 
                 if (request.Id == Guid.Empty)
                 {
-                    request.Id = Guid.NewGuid();
+                    method.Id = Guid.NewGuid();
                     StandardMethodsRepository.Add(method);
                 }
                 else
