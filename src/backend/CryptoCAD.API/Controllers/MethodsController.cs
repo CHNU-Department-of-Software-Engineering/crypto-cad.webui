@@ -147,7 +147,8 @@ namespace CryptoCAD.API.Controllers
                 }
                 else
                 {
-                    var current = StandardMethodsRepository.Get(request.Id);
+                    method.Id = request.Id;
+                    var current = StandardMethodsRepository.Get(method.Id);
                     if (current is null)
                     {
                         StandardMethodsRepository.Add(method);
