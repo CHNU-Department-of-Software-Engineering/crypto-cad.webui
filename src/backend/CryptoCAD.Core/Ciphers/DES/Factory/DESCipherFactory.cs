@@ -2,6 +2,7 @@
 using CryptoCAD.Core.Ciphers.DES.Structure;
 using CryptoCAD.Core.Factories.Abstractions;
 using CryptoCAD.Common.Configurations.Ciphers;
+using System.Linq;
 
 namespace CryptoCAD.Core.Ciphers.DES.Factory
 {
@@ -13,7 +14,15 @@ namespace CryptoCAD.Core.Ciphers.DES.Factory
 
             var results = new IntermediateResults
             {
-                Rounds = new RoundResults[desConfiguration.Rotations.Length],
+                InitialPermutation = desConfiguration.InitialPermutation.Select(x => (int)x).ToArray(),
+                FinalPermutation = desConfiguration.FinalPermutation.Select(x => (int)x).ToArray(),
+                ExpansionPermutation = desConfiguration.ExpansionPermutation.Select(x => (int)x).ToArray(),
+                Permutation = desConfiguration.Permutation.Select(x => (int)x).ToArray(),
+                Pc1Permutation = desConfiguration.Pc1Permutation.Select(x => (int)x).ToArray(),
+                Pc2Permutation = desConfiguration.Pc2Permutation.Select(x => (int)x).ToArray(),
+                Rotations = desConfiguration.Rotations.Select(x => (int)x).ToArray(),
+                SBoxes = desConfiguration.SBoxes.Select(x => x.Select(y => (int)y).ToArray()).ToArray(),
+
                 KeySchedule = new KeyScheduleResults()
             };
 

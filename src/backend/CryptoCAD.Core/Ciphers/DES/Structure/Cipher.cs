@@ -69,23 +69,32 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
             var blocks64b = data.ToUInts64();
             var resultBlocks64b = new ulong[blocks64b.Length];
 
+            Results.Blocks = new BlockResults[blocks64b.Length];
             for (byte i = 0; i < blocks64b.Length; i++)
             {
+                Results.Blocks[i] = new BlockResults
+                {
+                    InitialBlock = BitConverter.GetBytes(blocks64b[i]).ToHexadecimalString()
+                };
+                Results.Blocks[i].Rounds = new RoundResults[keys.Length];
                 resultBlocks64b[i] = Permutation(blocks64b[i], IP);
-                resultBlocks64b[i] = FeistelCipher(resultBlocks64b[i], keys);
+                Results.Blocks[i].AfterFirstPermutation = BitConverter.GetBytes(resultBlocks64b[i]).ToHexadecimalString();
+                resultBlocks64b[i] = FeistelCipher(resultBlocks64b[i], keys, Results.Blocks[i].Rounds);
+                Results.Blocks[i].FinalBlock = BitConverter.GetBytes(resultBlocks64b[i]).ToHexadecimalString();
                 resultBlocks64b[i] = Permutation(resultBlocks64b[i], FP);
+                Results.Blocks[i].AfterSecondPermutation = BitConverter.GetBytes(resultBlocks64b[i]).ToHexadecimalString();
             }
 
             return resultBlocks64b.ToBytes();
         }
 
-        private ulong FeistelCipher(ulong block64b, ulong[] keys)
+        private ulong FeistelCipher(ulong block64b, ulong[] keys, RoundResults[] RoundResults)
         {
             uint N1 = (uint)(block64b & 0xFFFFFFFF), N2 = (uint)((block64b >> 32) & 0xFFFFFFFF);
             for (byte i = 0; i < keys.Length; i++)
             {
-                Results.Rounds[i] = new RoundResults();
-                var res = Round.Process(N1, N2, keys[i], Results.Rounds[i]);
+                RoundResults[i] = new RoundResults();
+                var res = Round.Process(N1, N2, keys[i], RoundResults[i]);
                 N1 = res.Item1;
                 N2 = res.Item2;
             }

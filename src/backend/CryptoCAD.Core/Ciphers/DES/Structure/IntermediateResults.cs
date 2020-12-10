@@ -15,9 +15,17 @@ namespace CryptoCAD.Core.Ciphers.DES.Structure
         public int[] Pc2Permutation { get; set; }
         public int[] Rotations { get; set; }
 
-
-        public RoundResults[] Rounds { get; set; }
+        public BlockResults[] Blocks { get; set; }
         public KeyScheduleResults KeySchedule { get; set; }
+    }
+
+    internal class BlockResults
+    {
+        public string InitialBlock { get; set; }
+        public string AfterFirstPermutation { get; set; }
+        public RoundResults[] Rounds { get; set; }
+        public string FinalBlock { get; set; }
+        public string AfterSecondPermutation { get; set; }
     }
 
     internal class RoundResults
