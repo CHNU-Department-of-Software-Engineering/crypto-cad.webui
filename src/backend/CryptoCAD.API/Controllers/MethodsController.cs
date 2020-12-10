@@ -115,12 +115,13 @@ namespace CryptoCAD.API.Controllers
 
         [HttpPost]
         [Route("savechanges")]
-        public ActionResult SaveChanges(SaveRequest request)
+        public ActionResult<MethodModel> SaveChanges(SaveRequest request)
         {
             try
             {
                 var configuration = request.Configuration.DESConfigurationFromJsonString().ToJsonString();
 
+                MethodModel result;
                 var method = new StandardMethod
                 {
                     Name = request.Name,
@@ -144,6 +145,7 @@ namespace CryptoCAD.API.Controllers
                 {
                     method.Id = Guid.NewGuid();
                     StandardMethodsRepository.Add(method);
+                    result = Mapper.Map<MethodModel>(method);
                 }
                 else
                 {
@@ -152,6 +154,7 @@ namespace CryptoCAD.API.Controllers
                     if (current is null)
                     {
                         StandardMethodsRepository.Add(method);
+                        result = Mapper.Map<MethodModel>(method);
                     }
                     else
                     {
@@ -162,12 +165,13 @@ namespace CryptoCAD.API.Controllers
                         else
                         {
                             StandardMethodsRepository.Update(method);
+                            result = Mapper.Map<MethodModel>(method);
                         }
                     }
                 }
 
                 StandardMethodsRepository.SaveChanges();
-                return Ok("Successfully saved!");
+                return Ok(result);
             }
             catch (Exception exception)
             {
