@@ -26,11 +26,16 @@ export const method = {
     }
   },
   actions: {
-    getMethods ({ commit }) {
+    getMethods ({ commit }, selectMethodId) {
       return methodService.getMethods().then(
         methods => {
           const data = methods.data
           commit('getMethodsSuccess', data)
+          if (selectMethodId) {
+            commit('selectMethod', selectMethodId)
+          } else {
+            commit('selectFirstMethod')
+          }
           return Promise.resolve(data)
         },
         error => {
@@ -50,7 +55,7 @@ export const method = {
         }
       )
     },
-    saveMethod ({ dispatch, state }, payload) {
+    saveMethod ({ dispatch, commit, state }, payload) {
       const selectedMethod = state.methods.find(method => method.id === state.selectedMethodId)
       return methodService.saveMethod({
         ...(payload ? {} : { id: state.selectedMethodId }),
@@ -59,7 +64,7 @@ export const method = {
         configuration: selectedMethod.isModifiable ? getOnlyEditedPartOfConfig(state.currentConfiguration) : null
       }).then(
         data => {
-          dispatch('getMethods')
+          dispatch('getMethods', state.selectedMethodId || null)
           return Promise.resolve(data)
         },
         error => {
@@ -92,15 +97,15 @@ export const method = {
     }
   },
   mutations: {
-    getMethodsSuccess (state, methods) {
-      const sortedMethods = _.sortBy(methods, 'type')
-      const firstMethodInArray = sortedMethods && sortedMethods.length ? sortedMethods[0] : null
+    selectFirstMethod (state, methodId) {
+      const firstMethodInArray = state.methods.length ? state.methods[0] : null
       const methodConfiguration = firstMethodInArray ? firstMethodInArray.configuration : null
-      state.methods = sortedMethods
       state.selectedMethodId = firstMethodInArray ? firstMethodInArray.id : null
       state.selectedOperationId = firstMethodInArray?.type === 'cipher' ? 'encryption' : null
       state.currentConfiguration = firstMethodInArray.isModifiable ? populateEditedFieldToConfig(methodConfiguration) : {}
-      console.log('populateEditedFieldToConfig(methodConfiguration)', populateEditedFieldToConfig(methodConfiguration))
+    },
+    getMethodsSuccess (state, methods) {
+      state.methods = _.sortBy(methods, 'type')
       state.loading.global = false
     },
     getMethodsFailure (state) {
@@ -111,7 +116,9 @@ export const method = {
       const selectedMethod = state.methods.find(method => method.id === selectedMethodId)
       const methodConfiguration = selectedMethod.configuration
 
-      state.currentConfiguration = selectedMethod.isModifiable ? populateEditedFieldToConfig(methodConfiguration) : {}
+      state.currentConfiguration = selectedMethod.isModifiable || selectedMethod.relation === 'child'
+        ? populateEditedFieldToConfig(methodConfiguration)
+        : {}
       state.selectedMethodId = selectedMethodId
     },
     selectOperation (state, selectedOperationId) {

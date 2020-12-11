@@ -80,6 +80,13 @@ export default {
     formattedTableData () {
       return _.chunk(this.currentTableData, this.columnsNumber)
     }
+  },
+  watch: {
+    configuration (newConfiguration, oldConfiguration) {
+      if (!newConfiguration.edited && oldConfiguration.edited !== newConfiguration.edited) {
+        this.currentTableData = this.getDefaultTableData()
+      }
+    }
   }
 }
 </script>

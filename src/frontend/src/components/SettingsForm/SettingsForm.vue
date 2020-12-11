@@ -90,13 +90,12 @@
         <div v-if="selectedMethod && selectedMethod.relation !== 'parent'">
           <v-btn
             class="settings-form__footer-button"
-            :disabled="!isFormValid"
             outlined
             width="200px"
             color="error"
             @click="showDeleteDialog=true"
           >
-            Delete
+            Delete Method
           </v-btn>
         </div>
        <div>
@@ -114,12 +113,11 @@
            @click.stop=" selectedMethod.relation === 'parent' ? showSaveDialog=true : saveMethod()"
            v-if="selectedMethod &&  (selectedMethod.isModifiable || selectedMethod.relation === 'child')"
            class="settings-form__footer-button"
-           :disabled="!isFormValid"
            outlined
            width="200px"
            color="success"
          >
-           {{ selectedMethod.relation === 'parent' ? 'Save' : 'Update'}}
+           {{ selectedMethod.relation === 'parent' ? 'Save Method' : 'Update Method'}}
          </v-btn>
        </div>
       </div>
