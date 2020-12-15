@@ -26,7 +26,7 @@
       <div class="settings-form__content">
         <v-form v-model="isFormValid" ref="settingsForm">
           <v-row>
-            <v-col cols="4">
+            <v-col cols="12" sm="4" class="settings-form__selector">
               <v-select
                 v-model="methodId"
                 :items="formattedMethods"
@@ -36,7 +36,7 @@
                 required
               ></v-select>
             </v-col>
-            <v-col v-if="showOperationSelector" offset="4" cols="4">
+            <v-col v-if="showOperationSelector" offset-sm="4" cols="12" sm="4" class="settings-form__selector">
               <v-select
                 v-model="operationId"
                 :items="operations"
@@ -68,7 +68,10 @@
           </v-row>
           <v-row v-if="Object.values(currentConfiguration).length">
             <v-col class="settings-form__content-item" cols="12">
-              <ModifyForm :defaultConfiguration="selectedMethod.configuration ? JSON.parse(selectedMethod.configuration) : {}"></ModifyForm>
+              <ModifyForm
+                :isModified="isModified"
+                :defaultConfiguration="selectedMethod.configuration ? JSON.parse(selectedMethod.configuration) : {}"
+              ></ModifyForm>
             </v-col>
           </v-row>
           <v-row v-if="Object.values(currentConfiguration).length">
@@ -98,7 +101,7 @@
             Delete Method
           </v-btn>
         </div>
-       <div>
+       <div class="settings-form__footer-buttons-right">
          <v-btn
            class="settings-form__footer-button"
            :disabled="!isFormValid"
@@ -110,6 +113,7 @@
            {{ submitButtonLabel }}
          </v-btn>
          <v-btn
+           :disabled="!isModified"
            @click.stop=" selectedMethod.relation === 'parent' ? showSaveDialog=true : saveMethod()"
            v-if="selectedMethod &&  (selectedMethod.isModifiable || selectedMethod.relation === 'child')"
            class="settings-form__footer-button"
@@ -179,11 +183,11 @@ export default {
     downloadFile (processedMethod) {
       const dataBlob = new Blob([processedMethod.data], { type: 'text/plain;charset=utf-8' })
       const currentDate = moment().format('YYYY-MM-DD_h-mm-ss')
-      const operation = this.selectedOperation === 'encryption' ? 'encrypted' : 'decrypted'
+      const operation = this.selectedOperationId === 'encryption' ? 'encrypted' : 'decrypted'
 
       if (this.downloadIntermediateResults) {
         const intermediateResultsBlob = new Blob([processedMethod.intermediateResults], { type: 'text/plain;charset=utf-8' })
-        fileSaver.saveAs(intermediateResultsBlob, `${this.selectedMethod.name}_Intermediate_Results_${currentDate}.txt`)
+        fileSaver.saveAs(intermediateResultsBlob, `${this.selectedMethod.name}_intermediate_results_${currentDate}.txt`)
       }
 
       fileSaver.saveAs(dataBlob, `${this.selectedMethod.name}_${operation}_${currentDate}.txt`)
@@ -194,6 +198,9 @@ export default {
       'method',
       ['methods', 'selectedMethodId', 'currentConfiguration', 'operations', 'selectedOperationId', 'secretKey']
     ),
+    isModified () {
+      return Object.values(this.currentConfiguration).some((configuration) => configuration.edited)
+    },
     methodId: {
       set (methodId) {
         this.selectMethod(methodId)
@@ -348,6 +355,11 @@ export default {
 
       .settings-form__content-item {
         padding: 0 12px;
+        margin: 0 1px;
+      }
+
+      .settings-form__selector {
+        padding: 0 12px;
       }
     }
 
@@ -360,8 +372,21 @@ export default {
         margin: 20px 0;
         cursor: pointer;
 
+        .settings-form__footer-buttons-right {
+          @media (max-width: 468px) {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+          }
+        }
+
         .settings-form__footer-button {
           margin: 0 5px;
+
+          @media (max-width: 468px) {
+            margin: 5px 0;
+            width: 100%;
+          }
         }
       }
 

@@ -26,20 +26,12 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'ModifyForm',
-  props: ['defaultConfiguration'],
+  props: ['defaultConfiguration', 'isModified'],
   components: {
     ModifyDESForm
   },
   computed: {
-    ...mapState('method', ['currentConfiguration']),
-    isModified () {
-      return Object.values(this.currentConfiguration).some((configuration) => configuration.edited)
-    }
-  },
-  methods: {
-    checkForModifications (value) {
-      this.isModified = value
-    }
+    ...mapState('method', ['currentConfiguration'])
   }
 }
 </script>

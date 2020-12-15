@@ -31,6 +31,14 @@ export default Vue.extend({
     height: calc(100vh - 60px);
     padding: 20px 40px;
 
+    @media (max-width: 768px) {
+      padding: 20px 10px;
+    }
+
+    @media (max-width: 468px) {
+      padding: 5px;
+    }
+
     .app-content__container {
       height: 100%;
       padding: 20px 20px 0 20px;
