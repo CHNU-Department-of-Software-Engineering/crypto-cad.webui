@@ -3,7 +3,6 @@ using CryptoCAD.Common.Helpers;
 using CryptoCAD.Core.Ciphers.Abstractions;
 using CryptoCAD.Core.Ciphers.DES.Structure;
 using CryptoCAD.Common.Configurations.Ciphers;
-using System;
 
 namespace CryptoCAD.Core.Tests.Ciphers.DES.Structure
 {
@@ -38,7 +37,6 @@ namespace CryptoCAD.Core.Tests.Ciphers.DES.Structure
         {
             var results = new IntermediateResults
             {
-                Rounds = new RoundResults[DESConfigurationExtension.ROTATIONS.Length],
                 KeySchedule = new KeyScheduleResults()
             };
 
